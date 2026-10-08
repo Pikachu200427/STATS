@@ -9,4 +9,5 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENV JAVA_OPTS="-Xmx350m -Xms128m -XX:+UseSerialGC"
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
