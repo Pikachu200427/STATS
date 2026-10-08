@@ -33,7 +33,8 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        log.info("Checking STATS INNOTECH database status and verifying seed data...");
+        try {
+            log.info("Checking STATS INNOTECH database status and verifying seed data...");
 
         // 1. Admin User
         if (!userRepository.existsByEmail("admin@statsinnotech.in")) {
@@ -393,7 +394,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // 7. Seed Sample Internship Application
-        if (applicationRepository.count() <= 1 && savedStudent != null && savedFullstack != null) {
+        if (applicationRepository.count() == 0 && savedStudent != null && savedFullstack != null) {
             InternshipApplication app = InternshipApplication.builder()
                     .applicationId("STATS-APP-CSE-81024")
                     .student(savedStudent)
@@ -541,8 +542,11 @@ public class DataInitializer implements CommandLineRunner {
                     .build());
         }
 
-        log.info(
-                "Database seeding verified successfully! Default admin: admin@statsinnotech.in / Admin@123, student: student@statsinnotech.in / Student@123");
+            log.info(
+                    "Database seeding verified successfully! Default admin: admin@statsinnotech.in / Admin@123, student: student@statsinnotech.in / Student@123");
+        } catch (Exception e) {
+            log.warn("Database seed note: {} (non-critical, continuing application startup)", e.getMessage());
+        }
     }
 
     private void createSampleStudent(String email, String firstName, String lastName, String studentId, String college, String branch, int gradYear, String phone, String skills) {
