@@ -12,7 +12,7 @@
 	<artifactId>stats-backend</artifactId>
 	<version>1.0.0</version>
 	<name>stats-innotech-platform</name>
-	<description>STATS INNOTECH</description>
+	<description>STATS INNOTECH — Technical Training, Internship &amp; Student Management Platform</description>
 
 	<properties>
 		<java.version>21</java.version>

@@ -73,11 +73,13 @@ public class InternshipService {
         }
 
         if (internship == null) {
-            throw new IllegalArgumentException("Internship track not found: " + (requestedSlug != null ? requestedSlug : request.getInternshipId()));
+            throw new IllegalArgumentException("Internship track not found: "
+                    + (requestedSlug != null ? requestedSlug : request.getInternshipId()));
         }
 
         if (applicationRepository.existsByStudentAndInternship(student, internship)) {
-            throw new IllegalStateException("You have already submitted an application for the " + internship.getTitle() + " program");
+            throw new IllegalStateException(
+                    "You have already submitted an application for the " + internship.getTitle() + " program");
         }
 
         String prefix = "CIVIL".equalsIgnoreCase(internship.getDomain()) ? "STATS-CIV" : "STATS-CSE";

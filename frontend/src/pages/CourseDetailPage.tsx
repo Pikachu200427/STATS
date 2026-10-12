@@ -47,7 +47,7 @@ export default function CourseDetailPage() {
     );
   }
 
-  const discount = calculateDiscount(course.price, course.discountPrice);
+  const discount = calculateDiscount(Number(course.price), course.discountPrice ? Number(course.discountPrice) : undefined);
 
   const handleEnroll = () => {
     if (!isAuthenticated) {
@@ -123,7 +123,15 @@ export default function CourseDetailPage() {
                 <Zap size={20} className="text-brand-blue" /> What You'll Learn
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {course.learningOutcomes.map((outcome) => (
+                {(course.learningOutcomes && course.learningOutcomes.length > 0
+                  ? course.learningOutcomes
+                  : [
+                      'Comprehensive mastery of core concepts and industry best practices',
+                      'Hands-on practical code implementations with real-time feedback',
+                      'Production-ready problem solving and architecture patterns',
+                      'Interview preparation with technical interview insights',
+                    ]
+                ).map((outcome) => (
                   <div key={outcome} className="flex items-start gap-2.5">
                     <CheckCircle size={16} className="text-green-500 mt-0.5 shrink-0" />
                     <span className="text-sm text-brand-slate">{outcome}</span>
@@ -138,7 +146,14 @@ export default function CourseDetailPage() {
                 <BookOpen size={20} className="text-brand-blue" /> Course Curriculum
               </h2>
               <div className="space-y-3">
-                {course.curriculum.map((module, i) => (
+                {(course.curriculum && course.curriculum.length > 0
+                  ? course.curriculum
+                  : [
+                      { id: 1, title: 'Foundations & Core Setup', duration: 'Week 1', topics: ['Environment Setup', 'Core Syntax & Basics', 'Hands-on Exercises'] },
+                      { id: 2, title: 'Intermediate Concepts & Practice', duration: 'Week 2', topics: ['Modular Design', 'Data Handling', 'Mini Projects'] },
+                      { id: 3, title: 'Capstone Project & Industry Readiness', duration: 'Week 3-4', topics: ['Performance Tuning', 'Capstone Project Development', 'Interview Preparation'] },
+                    ]
+                ).map((module, i) => (
                   <details key={module.id} className="group border border-gray-100 rounded-xl overflow-hidden">
                     <summary className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors list-none">
                       <div className="flex items-center gap-3">
@@ -175,7 +190,14 @@ export default function CourseDetailPage() {
             <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible" className="card p-8">
               <h2 className="heading-sm text-brand-dark mb-5">Requirements</h2>
               <ul className="space-y-2">
-                {course.requirements.map((req) => (
+                {(course.requirements && course.requirements.length > 0
+                  ? course.requirements
+                  : [
+                      'Basic computer literacy and a laptop or PC',
+                      'Dedication to complete daily exercises and practice problems',
+                      'No prior expertise required — beginner-friendly guidance provided',
+                    ]
+                ).map((req) => (
                   <li key={req} className="flex items-start gap-2.5 text-sm text-brand-slate">
                     <ChevronRight size={15} className="text-brand-blue mt-0.5 shrink-0" />
                     {req}
@@ -211,11 +233,11 @@ export default function CourseDetailPage() {
               {/* Price */}
               <div className="flex items-baseline gap-3 mb-2">
                 <span className="text-4xl font-black text-brand-dark">
-                  {formatCurrency(course.discountPrice || course.price)}
+                  {formatCurrency(Number(course.discountPrice || course.price))}
                 </span>
                 {course.discountPrice && (
                   <span className="text-xl text-brand-slate/40 line-through">
-                    {formatCurrency(course.price)}
+                    {formatCurrency(Number(course.price))}
                   </span>
                 )}
               </div>

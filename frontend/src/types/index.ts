@@ -26,10 +26,10 @@ export interface Course {
   level: CourseLevel;
   price: number;
   discountPrice?: number;
-  thumbnail: string;
-  curriculum: CurriculumModule[];
-  learningOutcomes: string[];
-  requirements: string[];
+  thumbnail?: string;
+  curriculum?: CurriculumModule[];
+  learningOutcomes?: string[];
+  requirements?: string[];
   startDate?: string;
   endDate?: string;
   availableSeats?: number;

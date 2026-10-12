@@ -394,7 +394,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // 7. Seed Sample Internship Application
-        if (applicationRepository.count() == 0 && savedStudent != null && savedFullstack != null) {
+        if (applicationRepository.findByApplicationId("STATS-APP-CSE-81024").isEmpty() && savedStudent != null && savedFullstack != null) {
             InternshipApplication app = InternshipApplication.builder()
                     .applicationId("STATS-APP-CSE-81024")
                     .student(savedStudent)

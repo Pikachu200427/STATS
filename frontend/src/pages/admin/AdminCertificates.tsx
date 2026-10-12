@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Award, Plus, Search, Download, Send,
-  X, RefreshCw, UploadCloud, FileCheck, Trash2
+  X, RefreshCw, UploadCloud, FileCheck, Clock, Trash2
 } from 'lucide-react';
 import { adminService } from '../../services/adminService';
 import type { Certificate, Student } from '../../types';
@@ -239,12 +239,13 @@ export default function AdminCertificates() {
             <table className="w-full text-xs text-left">
               <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200">
                 <tr>
-                  <th className="py-3.5 px-4 whitespace-nowrap">Certificate ID</th>
-                  <th className="py-3.5 px-4 whitespace-nowrap">Student Name</th>
-                  <th className="py-3.5 px-4 whitespace-nowrap">Program Title</th>
-                  <th className="py-3.5 px-4 whitespace-nowrap">Type</th>
-                  <th className="py-3.5 px-4 whitespace-nowrap">Verification Code</th>
-                  <th className="py-3.5 px-4 text-right whitespace-nowrap">Actions</th>
+                  <th className="py-3 px-4">Certificate ID</th>
+                  <th className="py-3 px-4">Student Name</th>
+                  <th className="py-3 px-4">Program Title</th>
+                  <th className="py-3 px-4">Type</th>
+                  <th className="py-3 px-4">Document File</th>
+                  <th className="py-3 px-4">Verification Code</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -256,35 +257,46 @@ export default function AdminCertificates() {
 
                   return (
                     <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-3.5 px-4 font-mono font-bold text-brand-dark whitespace-nowrap align-middle">
+                      <td className="py-3 px-4 font-mono font-bold text-brand-dark">
                         {c.certificateNumber}
                       </td>
-                      <td className="py-3.5 px-4 align-middle">
+                      <td className="py-3 px-4">
                         <div className="font-bold text-slate-900 text-sm leading-tight">{studentName}</div>
-                        <div className="text-xs text-slate-400 mt-0.5">{c.student?.user?.email || c.student?.studentId || 'Student Email'}</div>
+                        <div className="text-[11px] text-slate-400 mt-0.5">{c.student?.user?.email || c.student?.studentId || 'Student Email'}</div>
                       </td>
-                      <td className="py-3.5 px-4 align-middle">
-                        <div className="font-semibold text-slate-800 leading-tight">{c.title}</div>
-                        <div className="text-xs text-amber-600 font-medium mt-0.5">{c.grade || 'Verified Completion'}</div>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-slate-800">{c.title}</div>
+                        <div className="text-[11px] text-amber-600 font-medium">{c.grade || 'Verified Completion'}</div>
                       </td>
-                      <td className="py-3.5 px-4 whitespace-nowrap align-middle">
-                        <span className="badge-blue text-xs font-bold px-2.5 py-1 rounded-full">
+                      <td className="py-3 px-4">
+                        <span className="badge-blue text-[10px] font-bold px-2 py-0.5 rounded-full">
                           {c.type}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 font-mono font-bold whitespace-nowrap align-middle">
-                        <span className="inline-flex items-center bg-blue-50 text-brand-blue px-2.5 py-1 rounded-md border border-blue-200 text-xs">
+                      <td className="py-3 px-4">
+                        {hasCustomFile ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            <FileCheck size={11} /> Uploaded Document
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                            <Clock size={11} /> No Document Attached
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 font-mono font-semibold text-slate-600">
+                        <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200 text-slate-800">
                           {c.verificationCode}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-right whitespace-nowrap align-middle">
+                      <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => {
                               setReplaceModalCert(c);
                               setReplaceFile(null);
                             }}
-                            className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors inline-flex items-center gap-1.5 border border-emerald-200"
+                            className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors inline-flex items-center gap-1 border border-emerald-200"
                             title="Upload / Replace Certificate"
                           >
                             <UploadCloud size={13} /> {hasCustomFile ? 'Replace File' : 'Upload File'}
@@ -294,14 +306,14 @@ export default function AdminCertificates() {
                             <a
                               href={`/api/documents/certificates/${c.id}/download`}
                               download
-                              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-brand-blue hover:bg-blue-100 transition-colors inline-flex items-center gap-1.5 border border-blue-200"
+                              className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-50 text-brand-blue hover:bg-blue-100 transition-colors inline-flex items-center gap-1 border border-blue-200"
                               title="Download Uploaded Certificate"
                             >
                               <Download size={13} /> Download
                             </a>
                           ) : (
                             <span
-                              className="px-3 py-1.5 text-xs font-medium text-slate-300 cursor-not-allowed inline-flex items-center gap-1.5"
+                              className="px-2.5 py-1 text-xs font-medium text-slate-300 cursor-not-allowed inline-flex items-center gap-1"
                               title="Upload a file first to enable download"
                             >
                               <Download size={13} /> Download

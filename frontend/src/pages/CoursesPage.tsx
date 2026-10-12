@@ -7,9 +7,7 @@ import { courseService } from '../services/courseService';
 import { formatCurrency, getLevelColor, getLevelLabel, calculateDiscount } from '../utils';
 import type { Course, CourseLevel, CourseStatus } from '../types';
 
-const CATEGORIES = ['All', 'Programming', 'Web Development', 'Cloud', 'Security', 'AI/ML', 'Civil Engineering'];
 const LEVELS: CourseLevel[] = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
-const TECHNOLOGIES = ['All', 'Java', 'Python', 'C / C++', 'MERN', 'AWS', 'Security', 'Python, PyTorch', 'AutoCAD, Civil 3D', 'Autodesk Revit', 'STAAD.Pro'];
 
 const fadeUp: any = {
   hidden: { opacity: 0, y: 24 },
@@ -18,7 +16,8 @@ const fadeUp: any = {
 const stagger = { visible: { transition: { staggerChildren: 0.07 } } };
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<Course[]>(COURSES);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
   const [technology, setTechnology] = useState('All');
@@ -30,13 +29,38 @@ export default function CoursesPage() {
     courseService.getAllCourses()
       .then((data) => {
         if (data && data.length > 0) {
-          setCourses(data);
+          // Render only active courses enlisted in the admin panel
+          const activeOnly = data.filter((c) => c.status === 'ACTIVE' || !c.status);
+          setCourses(activeOnly);
+        } else {
+          setCourses(COURSES.filter((c) => c.status === 'ACTIVE'));
         }
       })
       .catch((err) => {
-        console.warn('Backend courses API unavailable, using offline fallback', err);
+        console.warn('Backend courses API unavailable, using fallback', err);
+        setCourses(COURSES.filter((c) => c.status === 'ACTIVE'));
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
+
+  // Dynamically extract distinct categories and technologies from the enlisted courses
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    courses.forEach((c) => {
+      if (c.category && c.category.trim()) set.add(c.category.trim());
+    });
+    return ['All', ...Array.from(set)];
+  }, [courses]);
+
+  const technologies = useMemo(() => {
+    const set = new Set<string>();
+    courses.forEach((c) => {
+      if (c.technology && c.technology.trim()) set.add(c.technology.trim());
+    });
+    return ['All', ...Array.from(set)];
+  }, [courses]);
 
   const filtered = useMemo(() => {
     let list = [...courses];
@@ -45,10 +69,10 @@ export default function CoursesPage() {
       const q = search.toLowerCase();
       list = list.filter(
         (c) =>
-          c.title.toLowerCase().includes(q) ||
-          c.technology.toLowerCase().includes(q) ||
-          c.instructor.toLowerCase().includes(q) ||
-          c.category.toLowerCase().includes(q)
+          (c.title && c.title.toLowerCase().includes(q)) ||
+          (c.technology && c.technology.toLowerCase().includes(q)) ||
+          (c.instructor && c.instructor.toLowerCase().includes(q)) ||
+          (c.category && c.category.toLowerCase().includes(q))
       );
     }
 
@@ -56,13 +80,13 @@ export default function CoursesPage() {
     if (technology !== 'All') list = list.filter((c) => c.technology === technology);
     if (level !== 'ALL') list = list.filter((c) => c.level === level);
 
-    if (sortBy === 'price-asc') list.sort((a, b) => (a.discountPrice || a.price) - (b.discountPrice || b.price));
-    else if (sortBy === 'price-desc') list.sort((a, b) => (b.discountPrice || b.price) - (a.discountPrice || a.price));
+    if (sortBy === 'price-asc') list.sort((a, b) => Number(a.discountPrice || a.price) - Number(b.discountPrice || b.price));
+    else if (sortBy === 'price-desc') list.sort((a, b) => Number(b.discountPrice || b.price) - Number(a.discountPrice || a.price));
     else if (sortBy === 'rating') list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     else if (sortBy === 'popular') list.sort((a, b) => (b.totalStudents || 0) - (a.totalStudents || 0));
 
     return list;
-  }, [search, category, technology, level, sortBy]);
+  }, [courses, search, category, technology, level, sortBy]);
 
   const clearFilters = () => {
     setSearch('');
@@ -160,14 +184,14 @@ export default function CoursesPage() {
                 <div className="flex-1 min-w-48">
                   <label className="form-label text-xs">Category</label>
                   <select value={category} onChange={(e) => setCategory(e.target.value)} id="course-category" className="form-select text-sm py-2">
-                    {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                    {categories.map((c) => <option key={c}>{c}</option>)}
                   </select>
                 </div>
                 {/* Technology */}
                 <div className="flex-1 min-w-48">
                   <label className="form-label text-xs">Technology</label>
                   <select value={technology} onChange={(e) => setTechnology(e.target.value)} id="course-tech" className="form-select text-sm py-2">
-                    {TECHNOLOGIES.map((t) => <option key={t}>{t}</option>)}
+                    {technologies.map((t) => <option key={t}>{t}</option>)}
                   </select>
                 </div>
                 {/* Level */}
@@ -208,7 +232,21 @@ export default function CoursesPage() {
           )}
         </div>
 
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+              <div key={n} className="card p-0 overflow-hidden animate-pulse border border-gray-100">
+                <div className="h-44 bg-slate-200" />
+                <div className="p-5 space-y-3">
+                  <div className="h-4 bg-slate-200 rounded w-1/3" />
+                  <div className="h-6 bg-slate-200 rounded w-3/4" />
+                  <div className="h-4 bg-slate-200 rounded w-full" />
+                  <div className="h-6 bg-slate-200 rounded w-1/4 mt-4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="text-center py-20">
             <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
               <Search size={24} className="text-gray-400" />
@@ -225,7 +263,7 @@ export default function CoursesPage() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
             {filtered.map((course) => {
-              const discount = calculateDiscount(course.price, course.discountPrice);
+              const discount = calculateDiscount(Number(course.price), course.discountPrice ? Number(course.discountPrice) : undefined);
               return (
                 <motion.div key={course.id} variants={fadeUp}>
                   <div className="card-hover p-0 overflow-hidden group h-full flex flex-col">
@@ -282,11 +320,11 @@ export default function CoursesPage() {
                       <div className="flex items-center justify-between mt-auto">
                         <div className="flex items-baseline gap-2">
                           <span className="font-black text-brand-dark text-xl">
-                            {formatCurrency(course.discountPrice || course.price)}
+                            {formatCurrency(Number(course.discountPrice || course.price))}
                           </span>
                           {course.discountPrice && (
                             <span className="text-sm text-brand-slate/40 line-through">
-                              {formatCurrency(course.price)}
+                              {formatCurrency(Number(course.price))}
                             </span>
                           )}
                         </div>

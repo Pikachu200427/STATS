@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -10,13 +10,33 @@ import { courseService } from '../services/courseService';
 import { formatCurrency, calculateDiscount } from '../utils';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import type { Course } from '../types';
 
 export default function CourseEnrollPage() {
   const { slug } = useParams<{ slug: string }>();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const course = COURSES.find((c) => c.slug === slug);
+  const [course, setCourse] = useState<Course | undefined>(() => COURSES.find((c) => c.slug === slug));
+  const [loading, setLoading] = useState(!course);
+
+  useEffect(() => {
+    if (slug) {
+      courseService.getCourseBySlug(slug)
+        .then((data) => {
+          if (data) setCourse(data);
+        })
+        .catch(() => {
+          courseService.getAllCourses()
+            .then((list) => {
+              const found = list.find((c) => c.slug === slug || String(c.id) === slug);
+              if (found) setCourse(found);
+            })
+            .catch(() => {});
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [slug]);
 
   const [selectedBatch, setSelectedBatch] = useState('weekend');
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'netbanking'>('upi');
@@ -26,6 +46,14 @@ export default function CourseEnrollPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [enrollmentId, setEnrollmentId] = useState('');
+
+  if (loading && !course) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-20">
+        <div className="w-10 h-10 border-3 border-brand-blue/20 border-t-brand-blue rounded-full animate-spin" style={{ borderWidth: '3px' }} />
+      </div>
+    );
+  }
 
   if (!course) {
     return (
@@ -40,8 +68,8 @@ export default function CourseEnrollPage() {
     );
   }
 
-  const basePrice = course.discountPrice || course.price;
-  const originalDiscount = calculateDiscount(course.price, course.discountPrice);
+  const basePrice = Number(course.discountPrice || course.price);
+  const originalDiscount = calculateDiscount(Number(course.price), course.discountPrice ? Number(course.discountPrice) : undefined);
 
   const handleApplyCoupon = () => {
     setCouponError('');

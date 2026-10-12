@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Eye, EyeOff, Mail, Lock, User, Phone, Building, GraduationCap, ArrowRight, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Phone, Building, GraduationCap, Calendar, ArrowRight, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -202,21 +202,29 @@ export default function RegisterPage() {
               {/* Degree + Year */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="form-group">
-                  <label className="form-label">Degree <span className="text-gray-400 font-normal">(optional)</span></label>
+                  <label className="form-label" htmlFor="reg-degree">
+                    Degree <span className="text-gray-400 font-normal">(optional)</span>
+                  </label>
                   <div className="relative">
-                    <GraduationCap size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <select id="reg-degree" className="form-select pl-9" {...register('degree')}>
+                    <GraduationCap size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                    <select id="reg-degree" className="form-input form-select pl-9" {...register('degree')}>
                       <option value="">Select degree</option>
                       {DEGREES.map((d) => <option key={d}>{d}</option>)}
                     </select>
                   </div>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Current Year</label>
-                  <select id="reg-year" className="form-select" {...register('year', { valueAsNumber: true })}>
-                    <option value="">Select year</option>
-                    {[1, 2, 3, 4, 5, 6].map((y) => <option key={y} value={y}>Year {y}</option>)}
-                  </select>
+                  <label className="form-label" htmlFor="reg-year">
+                    Current Year <span className="text-gray-400 font-normal">(optional)</span>
+                  </label>
+                  <div className="relative">
+                    <Calendar size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                    <select id="reg-year" className="form-input form-select pl-9" {...register('year', { valueAsNumber: true })}>
+                      <option value="">Select year</option>
+                      {[1, 2, 3, 4].map((y) => <option key={y} value={y}>Year {y}</option>)}
+                      <option value="">Other</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 

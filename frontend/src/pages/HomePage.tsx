@@ -193,7 +193,7 @@ export default function HomePage() {
                 <img
                   src="/assets/logo-horizontal.png"
                   alt="STATS INNOTECH"
-                  className="h-20 sm:h-24 md:h-28 w-auto brightness-0 invert drop-shadow-[0_8px_32px_rgba(255,255,255,0.25)]"
+                  className="h-20 sm:h-28 md:h-44 w-auto brightness-0 invert drop-shadow-[0_8px_32px_rgba(255,255,255,0.25)]"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                     const next = e.currentTarget.nextElementSibling as HTMLElement;
@@ -454,12 +454,12 @@ export default function HomePage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
               {/* CSE Domain */}
               <motion.div variants={fadeUp}>
-                <div className="card p-8 h-full relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-48 h-48 bg-brand-blue/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                <div className="card p-8 h-full relative overflow-hidden border-2 border-brand-blue">
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-brand-blue/10 rounded-full -translate-y-1/2 translate-x-1/2" />
                   <div className="relative">
                     <div className="flex items-center gap-4 mb-6">
-                      <div className="w-14 h-14 rounded-2xl bg-brand-gradient-light flex items-center justify-center shadow-brand">
-                        <Code2 size={26} className="text-white" />
+                      <div className="w-14 h-14 rounded-2xl bg-white border border-blue-200 flex items-center justify-center shadow-brand p-2.5 shrink-0">
+                        <img src="/assets/logo-icon.png" alt="STATS INNOTECH" className="w-full h-full object-contain" />
                       </div>
                       <div>
                         <div className="badge-blue mb-1">9 Internships</div>
