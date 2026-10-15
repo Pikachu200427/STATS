@@ -7,13 +7,6 @@ const fadeUp = {
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { duration: 0.5, delay: i * 0.1 } }),
 };
 
-const TEAM = [
-  { name: 'Shubham Ajbale', role: 'Managing Director', initials: 'SA', bio: 'Founder and Managing Director of STATS INNOTECH. Leading the vision of bridging academia and industry.' },
-  { name: 'Sujal', role: 'Java & DSA Instructor', initials: 'SJ', bio: 'Expert Java developer with industry experience. Passionate about teaching programming and algorithms.' },
-  { name: 'Tanu', role: 'Python & Data Instructor', initials: 'TN', bio: 'Data science practitioner and educator. Specializes in Python, data analytics, and DSA.' },
-  { name: 'Ayushi', role: 'C/C++ Instructor', initials: 'AY', bio: 'Systems programmer with expertise in C and C++. Brings deep knowledge of memory management and low-level programming.' },
-  { name: 'Shubham', role: 'Linux & Cloud Instructor', initials: 'SH', bio: 'Cloud and DevOps engineer. Certified AWS practitioner with real-world cloud deployment experience.' },
-];
 
 export default function AboutPage() {
   return (
@@ -136,32 +129,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Team */}
-      <section className="section">
-        <div className="container-xl">
-          <div className="text-center mb-12">
-            <div className="section-tag mx-auto w-fit">Our Team</div>
-            <h2 className="heading-lg text-brand-dark">Meet the Instructors</h2>
-            <p className="body-lg max-w-xl mx-auto mt-4">
-              Industry practitioners who bring real-world experience to every lesson.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            {TEAM.map((member, i) => (
-              <motion.div key={member.name} custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-                <div className="card-hover p-6 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-brand-gradient-light flex items-center justify-center mx-auto mb-4 shadow-brand">
-                    <span className="text-white font-black text-xl">{member.initials}</span>
-                  </div>
-                  <h3 className="font-bold text-brand-dark text-sm mb-0.5">{member.name}</h3>
-                  <p className="text-xs text-brand-blue font-medium mb-3">{member.role}</p>
-                  <p className="text-xs text-brand-slate/70 leading-relaxed">{member.bio}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Civil Partnership */}
       <section className="section-sm pb-24 md:pb-32">

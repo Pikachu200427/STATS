@@ -6,7 +6,7 @@ import {
   ArrowRight, Building2, AlertTriangle, TrendingUp
 } from 'lucide-react';
 import * as Icons from 'lucide-react';
-import { CSE_INTERNSHIPS, CIVIL_INTERNSHIP } from '../data/mockData';
+import { CSE_INTERNSHIPS, CIVIL_INTERNSHIP, findInternshipBySlug } from '../data/mockData';
 import { internshipService } from '../services/internshipService';
 import { getModeLabel, getDomainLabel } from '../utils';
 import { useAuth } from '../context/AuthContext';
@@ -30,42 +30,86 @@ export default function InternshipDetailPage() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const [internship, setInternship] = useState<Internship | undefined>(() => ALL_INTERNSHIPS.find((i) => i.slug === slug));
+  const [internship, setInternship] = useState<Internship | undefined>(() => findInternshipBySlug(slug));
+  const [isLoading, setIsLoading] = useState<boolean>(!findInternshipBySlug(slug));
 
   useEffect(() => {
-    if (slug) {
-      internshipService.getInternshipBySlug(slug)
-        .then((data: any) => {
-          if (data) {
-            const def = ALL_INTERNSHIPS.find((i) => i.slug === slug);
-            setInternship({
-              ...def,
-              ...data,
-              domain: (data.domain === 'CIVIL' || data.domain === 'CIVIL_ENGINEERING') ? 'CIVIL_ENGINEERING' : 'COMPUTER_SCIENCE_ENGINEERING',
-              skills: data.skills || def?.skills || ['Industry Training', 'Hands-on Projects', 'Mentorship', 'Certification'],
-              learningOutcomes: data.learningOutcomes || def?.learningOutcomes || [
-                'Gain hands-on industry project experience',
-                'Work with modern development tools and production pipelines',
-                'Collaborate through git code reviews and team sprints',
-                'Build a professional verifiable project portfolio'
-              ],
-              responsibilities: data.responsibilities || def?.responsibilities || [
-                'Work on assigned product modules and deliver milestones',
-                'Attend weekly technical mentorship and review sessions',
-                'Document architecture decisions and API workflows',
-                'Submit weekly progress and capstone deliverables'
-              ],
-              color: data.color || def?.color || '#2563EB',
-              icon: data.icon || def?.icon || 'Briefcase',
-              availableSeats: data.availableSeats || def?.availableSeats || 15,
-            });
-          }
-        })
-        .catch(() => {
-          // offline fallback
-        });
+    let isMounted = true;
+    if (!slug) {
+      setIsLoading(false);
+      return;
     }
+
+    internshipService.getInternshipBySlug(slug)
+      .then((data: any) => {
+        if (!isMounted) return;
+        if (data && data.title) {
+          const def = findInternshipBySlug(slug);
+          setInternship({
+            ...def,
+            ...data,
+            title: data.title,
+            slug: data.slug || slug,
+            domain: (data.domain === 'CIVIL' || data.domain === 'CIVIL_ENGINEERING') ? 'CIVIL_ENGINEERING' : 'COMPUTER_SCIENCE_ENGINEERING',
+            skills: (data.skills && data.skills.length > 0) ? data.skills : (def?.skills || ['Industry Training', 'Hands-on Projects', 'Mentorship', 'Certification']),
+            description: data.description || def?.description || `${data.title} curriculum with practical hands-on engineering assignments.`,
+            shortDescription: data.shortDescription || def?.shortDescription || `${data.title} with industrial project training.`,
+            learningOutcomes: data.learningOutcomes || def?.learningOutcomes || [
+              'Gain hands-on industry project experience',
+              'Work with modern development tools and production pipelines',
+              'Collaborate through git code reviews and team sprints',
+              'Build a professional verifiable project portfolio'
+            ],
+            responsibilities: data.responsibilities || def?.responsibilities || [
+              'Work on assigned product modules and deliver milestones',
+              'Attend weekly technical mentorship and review sessions',
+              'Document architecture decisions and API workflows',
+              'Submit weekly progress and capstone deliverables'
+            ],
+            color: data.color || def?.color || '#2563EB',
+            icon: data.icon || def?.icon || 'Briefcase',
+            availableSeats: data.availableSeats || def?.availableSeats || 15,
+            duration: data.duration || def?.duration || '4 Weeks / 8 Weeks',
+            mode: data.mode || def?.mode || 'ONLINE',
+          });
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
+        internshipService.getAllInternships()
+          .then((allData: any[]) => {
+            if (!isMounted) return;
+            const matched = findInternshipBySlug(slug, allData);
+            if (matched) {
+              setInternship(matched);
+            } else {
+              const localMatch = findInternshipBySlug(slug);
+              if (localMatch) setInternship(localMatch);
+            }
+            setIsLoading(false);
+          })
+          .catch(() => {
+            if (!isMounted) return;
+            const localMatch = findInternshipBySlug(slug);
+            if (localMatch) setInternship(localMatch);
+            setIsLoading(false);
+          });
+      });
+
+    return () => { isMounted = false; };
   }, [slug]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-24 pb-20">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-brand-blue/20 border-t-brand-blue rounded-full animate-spin mx-auto mb-4" />
+          <h2 className="heading-sm text-brand-dark mb-1">Loading Internship...</h2>
+          <p className="text-xs text-brand-slate">Fetching program details</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!internship) {
     return (
@@ -82,12 +126,13 @@ export default function InternshipDetailPage() {
   const IconComp = getIcon(internship.icon || 'Briefcase');
 
   const handleApply = () => {
+    const targetSlug = internship?.slug || slug;
     if (!isAuthenticated) {
       toast.error('Please log in or register to apply.');
-      navigate('/login');
+      navigate('/login', { state: { from: `/internships/${targetSlug}/apply` } });
       return;
     }
-    navigate(`/internships/${slug}/apply`);
+    navigate(`/internships/${targetSlug}/apply`);
   };
 
   return (

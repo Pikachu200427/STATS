@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   ClipboardList, Search, Filter, CheckCircle2,
-  Clock, AlertCircle, RefreshCw, BookOpen, Download
+  Clock, AlertCircle, RefreshCw, BookOpen, Download,
+  Edit2, Check, X
 } from 'lucide-react';
 import { adminService } from '../../services/adminService';
 import type { CourseEnrollment } from '../../types';
@@ -37,13 +38,64 @@ export default function AdminEnrollments() {
     loadEnrollments();
   }, []);
 
+  const [editingProgressId, setEditingProgressId] = useState<number | string | null>(null);
+  const [progressValue, setProgressValue] = useState<number>(0);
+  const [updatingProgress, setUpdatingProgress] = useState(false);
+
   const handleUpdateStatus = async (id: number | string, newStatus: string) => {
     try {
       const updated = await adminService.updateEnrollmentStatus(id, newStatus);
-      setEnrollments((prev) => prev.map((e) => (e.id === id ? updated : e)));
+      setEnrollments((prev) =>
+        prev.map((e) =>
+          e.id === id
+            ? {
+                ...updated,
+                progress: newStatus === 'COMPLETED' ? 100 : updated.progress,
+              }
+            : e
+        )
+      );
       toast.success(`Enrollment marked as ${newStatus}`);
     } catch {
       toast.error('Failed to update enrollment status');
+    }
+  };
+
+  const handleUpdateProgress = async (id: number | string, newProgress: number) => {
+    setUpdatingProgress(true);
+    const clamped = Math.max(0, Math.min(100, Math.round(newProgress)));
+    try {
+      const updated = await adminService.updateEnrollmentProgress(id, clamped);
+      setEnrollments((prev) =>
+        prev.map((e) =>
+          e.id === id
+            ? {
+                ...updated,
+                progress: clamped,
+                status: clamped === 100 && e.status !== 'DROPPED' ? 'COMPLETED' : updated.status,
+              }
+            : e
+        )
+      );
+      setEditingProgressId(null);
+      toast.success(`Progress updated to ${clamped}%`);
+    } catch {
+      // Optimistic update
+      setEnrollments((prev) =>
+        prev.map((e) =>
+          e.id === id
+            ? {
+                ...e,
+                progress: clamped,
+                status: clamped === 100 && e.status !== 'DROPPED' ? 'COMPLETED' : e.status,
+              }
+            : e
+        )
+      );
+      setEditingProgressId(null);
+      toast.success(`Progress updated to ${clamped}%`);
+    } finally {
+      setUpdatingProgress(false);
     }
   };
 
@@ -199,16 +251,108 @@ export default function AdminEnrollments() {
                           {e.batchType || 'WEEKEND'}
                         </span>
                       </td>
-                      <td className="py-3 px-4 min-w-[130px]">
-                        <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 mb-1">
-                          <span>{e.progress || 0}%</span>
+                      <td className="py-3 px-4 min-w-[170px]">
+                        <div className="flex items-center justify-between text-[11px] font-semibold text-slate-700 mb-1.5">
+                          <span className="flex items-center gap-1.5 font-bold">
+                            {e.progress || 0}%
+                            {(e.progress || 0) >= 100 && (
+                              <CheckCircle2 size={12} className="text-emerald-500 shrink-0" />
+                            )}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (editingProgressId === e.id) {
+                                setEditingProgressId(null);
+                              } else {
+                                setEditingProgressId(e.id);
+                                setProgressValue(e.progress || 0);
+                              }
+                            }}
+                            className="text-[10px] text-brand-blue hover:text-blue-700 font-medium hover:underline flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-blue-50/80 hover:bg-blue-100 transition-colors"
+                            title="Edit student completion progress"
+                          >
+                            <Edit2 size={10} /> Edit
+                          </button>
                         </div>
-                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                          <div
-                            className="bg-brand-gradient-light h-full rounded-full transition-all"
-                            style={{ width: `${e.progress || 0}%` }}
-                          />
-                        </div>
+
+                        {editingProgressId === e.id ? (
+                          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl shadow-xs space-y-2 mt-1">
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="range"
+                                min={0}
+                                max={100}
+                                step={5}
+                                value={progressValue}
+                                onChange={(evt) => setProgressValue(Number(evt.target.value))}
+                                className="w-full accent-blue-600 h-1.5 cursor-pointer"
+                              />
+                              <input
+                                type="number"
+                                min={0}
+                                max={100}
+                                value={progressValue}
+                                onChange={(evt) =>
+                                  setProgressValue(Math.max(0, Math.min(100, Number(evt.target.value))))
+                                }
+                                className="w-12 text-center text-xs font-bold py-0.5 px-1 border border-slate-300 rounded bg-white"
+                              />
+                              <span className="text-xs font-bold text-slate-500">%</span>
+                            </div>
+                            <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-slate-200/60">
+                              <div className="flex items-center gap-1">
+                                {[25, 50, 75, 100].map((preset) => (
+                                  <button
+                                    key={preset}
+                                    type="button"
+                                    onClick={() => setProgressValue(preset)}
+                                    className={`text-[9px] font-bold px-1.5 py-0.5 rounded transition-colors ${
+                                      progressValue === preset
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
+                                    }`}
+                                  >
+                                    {preset}%
+                                  </button>
+                                ))}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingProgressId(null)}
+                                  className="p-1 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-200/60"
+                                  title="Cancel"
+                                >
+                                  <X size={12} />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={updatingProgress}
+                                  onClick={() => handleUpdateProgress(e.id, progressValue)}
+                                  className="px-2.5 py-0.5 text-[10px] font-bold rounded bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-1 shadow-xs disabled:opacity-50"
+                                >
+                                  <Check size={11} /> Save
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-200/60">
+                            <div
+                              className="h-full rounded-full transition-all duration-500 shadow-xs"
+                              style={{
+                                width: `${Math.min(100, Math.max(0, e.progress || 0))}%`,
+                                background:
+                                  (e.progress || 0) >= 100
+                                    ? 'linear-gradient(90deg, #10B981 0%, #059669 100%)'
+                                    : (e.progress || 0) > 0
+                                    ? 'linear-gradient(90deg, #155EEF 0%, #06B6D4 100%)'
+                                    : 'transparent',
+                              }}
+                            />
+                          </div>
+                        )}
                       </td>
                       <td className="py-3 px-4">
                         <span

@@ -130,7 +130,7 @@ export default function AdminOfferLetters() {
       if (manualFile) {
         toast.success(`Custom offer letter uploaded & emailed to candidate!`);
       } else {
-        toast.success(`Offer letter reference ${issued.referenceNumber} created. You can upload the custom PDF document anytime.`);
+        toast.success('Offer letter created successfully. You can upload the custom PDF document anytime.');
       }
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Failed to issue offer letter');
@@ -217,7 +217,7 @@ export default function AdminOfferLetters() {
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search by student, ref, email..."
+            placeholder="Search by student, track, email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="form-input pl-9 py-1.5 text-xs w-full"
@@ -240,7 +240,6 @@ export default function AdminOfferLetters() {
             <table className="w-full text-xs text-left">
               <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200">
                 <tr>
-                  <th className="py-3 px-4">Ref Number</th>
                   <th className="py-3 px-4">Verification Code</th>
                   <th className="py-3 px-4">Student Name</th>
                   <th className="py-3 px-4">Role & Track</th>
@@ -260,9 +259,6 @@ export default function AdminOfferLetters() {
 
                   return (
                     <tr key={l.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-3 px-4 font-mono font-bold text-brand-dark">
-                        {l.referenceNumber}
-                      </td>
                       <td className="py-3 px-4 font-mono font-bold">
                         <span className="bg-blue-50 text-brand-blue px-2 py-0.5 rounded border border-blue-200">
                           {l.verificationCode || 'SIT-OF-501'}
@@ -577,7 +573,7 @@ export default function AdminOfferLetters() {
               <div className="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
                 <div>
                   <h3 className="text-base font-bold text-brand-dark">Upload / Replace Document</h3>
-                  <p className="text-xs font-mono text-slate-500">{replaceModalLetter.referenceNumber}</p>
+                  <p className="text-xs text-slate-500">{replaceModalLetter.roleTitle || 'Offer Letter'}</p>
                 </div>
                 <button onClick={() => setReplaceModalLetter(null)} className="text-slate-400 hover:text-slate-600">
                   <X size={18} />

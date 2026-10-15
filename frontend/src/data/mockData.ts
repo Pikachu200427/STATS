@@ -60,25 +60,6 @@ export const COURSES: Course[] = [
     createdAt: '2026-10-09T08:24:43Z',
   },
   {
-    id: 5,
-    title: 'Cloud Computing (AWS)',
-    slug: 'cloud-computing',
-    shortDescription: 'Design highly available, scalable AWS cloud infrastructures.',
-    description: 'EC2, S3, RDS, VPC networking, IAM security, Docker on ECS, and Terraform.',
-    category: 'Cloud',
-    technology: 'AWS',
-    instructor: 'Shubham Verma',
-    duration: '1 Month',
-    level: 'INTERMEDIATE' as CourseLevel,
-    price: 1399,
-    discountPrice: 999,
-    thumbnail: '/api/placeholder/course/aws',
-    status: 'ACTIVE' as CourseStatus,
-    rating: 4.9,
-    totalStudents: 98,
-    createdAt: '2026-10-09T08:24:43Z',
-  },
-  {
     id: 11,
     title: 'Data Analytics',
     slug: 'data-analytics',
@@ -98,44 +79,6 @@ export const COURSES: Course[] = [
     createdAt: '2026-10-10T15:34:07Z',
   },
   {
-    id: 12,
-    title: 'DSA (JAVA)',
-    slug: 'dsa-java-',
-    shortDescription: 'Master Data Structures and Algorithms with Java for technical interviews.',
-    description: 'Hands-on curriculum with live industry projects, problem solving patterns, and interview prep.',
-    category: 'Programming',
-    technology: 'Java',
-    instructor: 'Sujal Bagde',
-    duration: '1 Month',
-    level: 'INTERMEDIATE' as CourseLevel,
-    price: 1299,
-    discountPrice: 899,
-    thumbnail: '/api/placeholder/course/dsa-java',
-    status: 'ACTIVE' as CourseStatus,
-    rating: 4.8,
-    totalStudents: 52,
-    createdAt: '2026-10-10T15:35:26Z',
-  },
-  {
-    id: 13,
-    title: 'DSA (Python)',
-    slug: 'dsa-python-',
-    shortDescription: 'Master Data Structures and Algorithms using Python from basics to advanced.',
-    description: 'Hands-on curriculum with live industry projects, algorithmic thinking, and coding challenges.',
-    category: 'Programming',
-    technology: 'Python',
-    instructor: 'Tanushree Gaikwad',
-    duration: '1 Month',
-    level: 'INTERMEDIATE' as CourseLevel,
-    price: 1299,
-    discountPrice: 899,
-    thumbnail: '/api/placeholder/course/dsa-python',
-    status: 'ACTIVE' as CourseStatus,
-    rating: 4.8,
-    totalStudents: 48,
-    createdAt: '2026-10-10T15:36:02Z',
-  },
-  {
     id: 14,
     title: 'Software Engineering',
     slug: 'software-engineering',
@@ -153,25 +96,6 @@ export const COURSES: Course[] = [
     rating: 4.8,
     totalStudents: 36,
     createdAt: '2026-10-10T15:40:02Z',
-  },
-  {
-    id: 15,
-    title: 'Software Testing',
-    slug: 'software-testing',
-    shortDescription: 'Comprehensive hands-on training module in Manual & Automated QA Testing.',
-    description: 'Hands-on curriculum with live industry projects, Jira bug tracking, test cases, and quality assurance.',
-    category: 'Testing',
-    technology: 'Jira',
-    instructor: 'Ayushi Moon',
-    duration: '1 Month',
-    level: 'INTERMEDIATE' as CourseLevel,
-    price: 1299,
-    discountPrice: 899,
-    thumbnail: '/api/placeholder/course/software-testing',
-    status: 'ACTIVE' as CourseStatus,
-    rating: 4.8,
-    totalStudents: 41,
-    createdAt: '2026-10-10T15:40:46Z',
   },
   {
     id: 16,
@@ -220,7 +144,6 @@ export const CSE_INTERNSHIPS: Internship[] = [
       'Write complex SQL queries',
       'Communicate data insights effectively',
     ],
-    availableSeats: 15,
     status: 'ACTIVE' as CourseStatus,
     icon: 'BarChart2',
     color: '#155EEF',
@@ -250,160 +173,9 @@ export const CSE_INTERNSHIPS: Internship[] = [
       'Use Git for version control',
       'Work in an Agile development environment',
     ],
-    availableSeats: 20,
     status: 'ACTIVE' as CourseStatus,
     icon: 'Globe',
     color: '#06B6D4',
-    createdAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 3,
-    title: 'DBMS Internship',
-    slug: 'dbms-internship',
-    domain: 'COMPUTER_SCIENCE_ENGINEERING' as InternshipDomain,
-    technology: 'PostgreSQL, MySQL, SQL',
-    description: 'Deep dive into database design, normalization, query optimization, and database administration. Work on real database systems and learn industry-standard practices.',
-    shortDescription: 'Design and manage real databases with SQL, optimization, and data modeling.',
-    duration: '4 Weeks / 8 Weeks',
-    mode: 'ONLINE' as InternshipMode,
-    eligibility: 'BE/B.Tech/BCA/BSc (CS/IT) or equivalent, 2nd Year and above',
-    skills: ['SQL', 'Database Design', 'Normalization', 'PostgreSQL', 'MySQL'],
-    responsibilities: [
-      'Design entity-relationship diagrams',
-      'Implement and normalize database schemas',
-      'Write and optimize complex SQL queries',
-      'Perform database administration tasks',
-    ],
-    learningOutcomes: [
-      'Design normalized relational databases',
-      'Write complex SQL queries and stored procedures',
-      'Perform query optimization',
-      'Understand transactions and ACID properties',
-    ],
-    availableSeats: 12,
-    status: 'ACTIVE' as CourseStatus,
-    icon: 'Database',
-    color: '#334155',
-    createdAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 4,
-    title: 'AI & Machine Learning Internship',
-    slug: 'aiml-internship',
-    domain: 'COMPUTER_SCIENCE_ENGINEERING' as InternshipDomain,
-    technology: 'Python, TensorFlow, Scikit-learn',
-    description: 'Explore the cutting edge of AI and Machine Learning. Build ML models, work with neural networks, and implement AI solutions for real-world problems.',
-    shortDescription: 'Build AI/ML models and implement intelligent solutions using Python and TensorFlow.',
-    duration: '8 Weeks / 12 Weeks',
-    mode: 'ONLINE' as InternshipMode,
-    eligibility: 'BE/B.Tech (CS/IT/EC/EE) or equivalent, 3rd Year and above; Python required',
-    skills: ['Python', 'Machine Learning', 'Deep Learning', 'TensorFlow/PyTorch', 'Statistics'],
-    responsibilities: [
-      'Implement and train machine learning models',
-      'Perform data preprocessing and feature engineering',
-      'Evaluate model performance',
-      'Document research and findings',
-    ],
-    learningOutcomes: [
-      'Build and evaluate ML models',
-      'Implement neural networks using TensorFlow',
-      'Apply data science techniques',
-      'Understand model deployment basics',
-    ],
-    availableSeats: 10,
-    status: 'ACTIVE' as CourseStatus,
-    icon: 'Brain',
-    color: '#7C3AED',
-    createdAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 5,
-    title: 'IoT & Embedded Systems Internship',
-    slug: 'iot-embedded-internship',
-    domain: 'COMPUTER_SCIENCE_ENGINEERING' as InternshipDomain,
-    technology: 'Arduino, Raspberry Pi, C/C++, Python',
-    description: 'Hands-on IoT and Embedded Systems training. Work with microcontrollers, sensors, actuators, and IoT protocols. Access videos, screenshots, and practical resources from real embedded projects.',
-    shortDescription: 'Build IoT devices and embedded systems with Arduino, Raspberry Pi, and real hardware.',
-    duration: '8 Weeks / 12 Weeks',
-    mode: 'HYBRID' as InternshipMode,
-    eligibility: 'BE/B.Tech (CS/IT/EC/EE) or equivalent, 2nd Year and above',
-    skills: ['C/C++', 'Python', 'Arduino', 'Raspberry Pi', 'IoT Protocols', 'Sensors'],
-    responsibilities: [
-      'Design and build IoT hardware prototypes',
-      'Program microcontrollers',
-      'Implement IoT communication protocols',
-      'Document technical projects with photos and videos',
-    ],
-    learningOutcomes: [
-      'Build functional IoT devices',
-      'Program Arduino and Raspberry Pi',
-      'Implement MQTT, HTTP IoT protocols',
-      'Document embedded systems projects professionally',
-    ],
-    availableSeats: 8,
-    status: 'ACTIVE' as CourseStatus,
-    icon: 'Cpu',
-    color: '#059669',
-    createdAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 6,
-    title: 'Software Testing Internship',
-    slug: 'software-testing-internship',
-    domain: 'COMPUTER_SCIENCE_ENGINEERING' as InternshipDomain,
-    technology: 'Selenium, JUnit, Postman, JIRA',
-    description: 'Learn manual and automated software testing. Work on real applications, write test cases, find bugs, and ensure software quality using industry-standard tools.',
-    shortDescription: 'Master software testing — manual testing, automation, API testing, and QA processes.',
-    duration: '4 Weeks / 8 Weeks',
-    mode: 'ONLINE' as InternshipMode,
-    eligibility: 'BE/B.Tech/BCA/BSc (CS/IT) or equivalent, 2nd Year and above',
-    skills: ['Manual Testing', 'Selenium', 'JUnit', 'Postman', 'JIRA', 'Test Case Writing'],
-    responsibilities: [
-      'Write and execute test cases',
-      'Report and track bugs in JIRA',
-      'Perform API testing with Postman',
-      'Automate test scripts using Selenium',
-    ],
-    learningOutcomes: [
-      'Write comprehensive test cases',
-      'Perform API testing',
-      'Automate tests with Selenium WebDriver',
-      'Work in Agile QA workflows',
-    ],
-    availableSeats: 15,
-    status: 'ACTIVE' as CourseStatus,
-    icon: 'TestTube',
-    color: '#DC2626',
-    createdAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 7,
-    title: 'Java Development Internship',
-    slug: 'java-internship',
-    domain: 'COMPUTER_SCIENCE_ENGINEERING' as InternshipDomain,
-    technology: 'Java, Spring Boot, Maven, PostgreSQL',
-    description: 'Build enterprise-grade Java applications. Work with Spring Boot, REST APIs, and PostgreSQL. Gain production-level Java development experience.',
-    shortDescription: 'Build production-ready Java applications with Spring Boot, REST APIs, and databases.',
-    duration: '8 Weeks / 12 Weeks',
-    mode: 'ONLINE' as InternshipMode,
-    eligibility: 'BE/B.Tech (CS/IT) or equivalent, Java Core knowledge required',
-    skills: ['Java', 'Spring Boot', 'REST APIs', 'SQL', 'Maven', 'Git'],
-    responsibilities: [
-      'Develop and maintain Spring Boot applications',
-      'Design and implement REST APIs',
-      'Write unit and integration tests',
-      'Participate in code reviews',
-    ],
-    learningOutcomes: [
-      'Build complete Spring Boot applications',
-      'Design RESTful API architecture',
-      'Implement Spring Security and JWT',
-      'Work in professional Java development workflows',
-    ],
-    availableSeats: 10,
-    status: 'ACTIVE' as CourseStatus,
-    icon: 'Code2',
-    color: '#F59E0B',
     createdAt: '2024-01-01T00:00:00Z',
   },
   {
@@ -430,16 +202,15 @@ export const CSE_INTERNSHIPS: Internship[] = [
       'Work with databases from Python',
       'Automate real-world tasks with Python',
     ],
-    availableSeats: 12,
     status: 'ACTIVE' as CourseStatus,
     icon: 'Terminal',
     color: '#3B82F6',
     createdAt: '2024-01-01T00:00:00Z',
   },
   {
-    id: 9,
-    title: 'Cloud Computing (AWS) Internship',
-    slug: 'aws-cloud-internship',
+    id: 6,
+    title: 'Cloud Computing Internship',
+    slug: 'cloud-computing-internship',
     domain: 'COMPUTER_SCIENCE_ENGINEERING' as InternshipDomain,
     technology: 'AWS, Linux, Docker, Terraform',
     description: 'Deploy and manage real applications on AWS. Work with EC2, S3, Lambda, RDS, VPC, IAM, and DevOps tools. Gain practical cloud engineering experience.',
@@ -460,10 +231,67 @@ export const CSE_INTERNSHIPS: Internship[] = [
       'Configure AWS security and networking',
       'Build CI/CD pipelines on AWS',
     ],
-    availableSeats: 10,
     status: 'ACTIVE' as CourseStatus,
     icon: 'Cloud',
     color: '#FF9900',
+    createdAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 7,
+    title: 'Networking',
+    slug: 'networking',
+    domain: 'COMPUTER_SCIENCE_ENGINEERING' as InternshipDomain,
+    technology: 'TCP/IP, Routing & Switching, CCNA, Wireshark, Linux Networking',
+    description: 'Master core computer networking concepts, subnetting, packet analysis, router/switch configurations, and modern network security protocols.',
+    shortDescription: 'Hands-on network engineering, protocols, Wireshark traffic inspection, and firewall management.',
+    duration: '4 Weeks / 8 Weeks',
+    mode: 'ONLINE' as InternshipMode,
+    eligibility: 'BE/B.Tech (CS/IT/EC) or Diploma/BCA, 2nd Year and above',
+    skills: ['TCP/IP', 'Routing & Switching', 'Wireshark', 'Network Security', 'Firewalls', 'Linux'],
+    responsibilities: [
+      'Analyze network traffic and capture packets with Wireshark',
+      'Configure virtual routers, switches, and subnets',
+      'Simulate client-server communication topologies',
+      'Troubleshoot network connectivity and firewall policies',
+    ],
+    learningOutcomes: [
+      'Design and document structured IP address plans and VLANs',
+      'Diagnose network latencies and security bottlenecks',
+      'Implement robust firewall and access list rules',
+      'Gain practical industry-level network troubleshooting skills',
+    ],
+    status: 'ACTIVE' as CourseStatus,
+    icon: 'Terminal',
+    color: '#0284C7',
+    createdAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 9,
+    title: 'Mobile Development Internship',
+    slug: 'mobile-development-internship',
+    domain: 'COMPUTER_SCIENCE_ENGINEERING' as InternshipDomain,
+    technology: 'Flutter, React Native, Android Studio, Firebase, REST APIs',
+    description: 'Design and build cross-platform mobile applications from interactive UI/UX components to state management, local storage, and cloud backend integration.',
+    shortDescription: 'Build modern iOS & Android mobile apps with Flutter / React Native and cloud APIs.',
+    duration: '8 Weeks / 12 Weeks',
+    mode: 'ONLINE' as InternshipMode,
+    eligibility: 'BE/B.Tech/BCA/BSc (CS/IT) or equivalent, basic programming knowledge required',
+    skills: ['Mobile UI/UX', 'Flutter / React Native', 'Firebase', 'State Management', 'REST APIs', 'Git'],
+    responsibilities: [
+      'Develop pixel-perfect mobile user interface screens',
+      'Integrate RESTful backends and real-time database feeds',
+      'Implement authentication, push notifications, and offline caching',
+      'Test apps across diverse screen resolutions and devices',
+    ],
+    learningOutcomes: [
+      'Build and publish production-grade mobile applications',
+      'Master cross-platform mobile architecture and state handling',
+      'Connect apps with cloud services and analytics',
+      'Deliver real mobile portfolio projects',
+    ],
+    status: 'ACTIVE' as CourseStatus,
+    icon: 'Globe',
+    color: '#8B5CF6',
     createdAt: '2024-01-01T00:00:00Z',
   },
 ];
@@ -521,11 +349,66 @@ export const CIVIL_INTERNSHIP: Internship = {
 
 export const INTERNSHIPS: Internship[] = [...CSE_INTERNSHIPS, CIVIL_INTERNSHIP];
 
+/**
+ * Robust helper to locate an internship by slug or known alias across local mocks and API results
+ */
+export function findInternshipBySlug(slug?: string, extraList: Internship[] = []): Internship | undefined {
+  if (!slug) return undefined;
+  const s = slug.toLowerCase().trim();
+  const all = [...extraList, ...INTERNSHIPS];
+
+  // 1. Direct slug match
+  let found = all.find((i) => i.slug?.toLowerCase() === s);
+  if (found) return found;
+
+  // 2. Direct ID match if slug is numeric
+  if (/^\d+$/.test(s)) {
+    found = all.find((i) => i.id === parseInt(s, 10));
+    if (found) return found;
+  }
+
+  // 3. Known aliases map
+  const aliases: Record<string, string[]> = {
+    'ai-ml-internship': ['aiml-internship', 'ai-ml', 'aiml'],
+    'aiml-internship': ['ai-ml-internship', 'aiml', 'ai-ml'],
+    'cloud-computing-internship': ['aws-cloud-internship', 'cloud-devops-internship', 'cloud'],
+    'aws-cloud-internship': ['cloud-computing-internship', 'cloud-devops-internship', 'cloud'],
+    'cloud-devops-internship': ['data-analytics-internship', 'cloud-computing-internship'],
+    'data-analytics-internship': ['cloud-devops-internship', 'data-analytics'],
+    'python-development-internship': ['python-internship', 'python'],
+    'python-internship': ['python-development-internship', 'python'],
+    'web-development-internship': ['web-development', 'fullstack'],
+    'civil-engineering-internship': ['civil', 'civil-internship'],
+    'civil': ['civil-engineering-internship'],
+    'networking': ['networking-internship', 'network-internship'],
+    'mobile-development-internship': ['mobile-internship', 'app-development-internship'],
+  };
+
+  const candidateSlugs = aliases[s] || [];
+  for (const cs of candidateSlugs) {
+    found = all.find((i) => i.slug?.toLowerCase() === cs);
+    if (found) return found;
+  }
+
+  // 4. Keyword / title partial match
+  const cleanKeyword = s.replace(/[-_]/g, ' ').replace('internship', '').trim();
+  if (cleanKeyword.length > 2) {
+    found = all.find((i) => {
+      const islug = (i.slug || '').toLowerCase().replace(/[-_]/g, ' ');
+      const ititle = (i.title || '').toLowerCase();
+      return islug.includes(cleanKeyword) || ititle.includes(cleanKeyword) || cleanKeyword.includes(ititle);
+    });
+    if (found) return found;
+  }
+
+  return undefined;
+}
+
 // ===================== PLATFORM STATS =====================
 export const PLATFORM_STATS: PlatformStats = {
   totalStudents: 500,
-  totalCourses: 9,
-  totalInternships: 10,
+  totalCourses: 10,
+  totalInternships: 7,
   totalCertificates: 300,
   totalProjects: 150,
   activeEnrollments: 200,

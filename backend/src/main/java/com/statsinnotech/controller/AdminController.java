@@ -384,6 +384,26 @@ public class AdminController {
         CourseEnrollment enrollment = enrollmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Enrollment not found with id: " + id));
         enrollment.setStatus(status.toUpperCase());
+        if ("COMPLETED".equalsIgnoreCase(status) && enrollment.getProgress() < 100) {
+            enrollment.setProgress(100);
+        }
+        return ResponseEntity.ok(enrollmentRepository.save(enrollment));
+    }
+
+    @PatchMapping("/enrollments/{id}/progress")
+    public ResponseEntity<CourseEnrollment> updateEnrollmentProgress(
+            @PathVariable Long id,
+            @RequestParam Integer progress
+    ) {
+        CourseEnrollment enrollment = enrollmentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Enrollment not found with id: " + id));
+        int p = Math.max(0, Math.min(100, progress != null ? progress : 0));
+        enrollment.setProgress(p);
+        if (p == 100 && !"DROPPED".equalsIgnoreCase(enrollment.getStatus())) {
+            enrollment.setStatus("COMPLETED");
+        } else if (p < 100 && "COMPLETED".equalsIgnoreCase(enrollment.getStatus())) {
+            enrollment.setStatus("ACTIVE");
+        }
         return ResponseEntity.ok(enrollmentRepository.save(enrollment));
     }
 

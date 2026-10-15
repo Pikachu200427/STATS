@@ -225,7 +225,7 @@ export default function AdminCourses() {
                     <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
                       <td className="py-3 px-4">
                         <div className="font-bold text-brand-dark text-sm leading-tight">{c.title}</div>
-                        <div className="text-[11px] text-slate-400 mt-0.5">slug: /{c.slug} • By {c.instructor || 'Faculty'}</div>
+                        <div className="text-[11px] text-slate-400 mt-0.5">slug: /{c.slug}</div>
                       </td>
                       <td className="py-3 px-4 font-semibold text-slate-700">
                         {c.technology}

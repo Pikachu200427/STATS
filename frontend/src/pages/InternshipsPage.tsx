@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Briefcase, Building2, Code2, CheckCircle, ArrowRight, Clock, Users, MapPin, Filter } from 'lucide-react';
 import * as Icons from 'lucide-react';
-import { CSE_INTERNSHIPS, CIVIL_INTERNSHIP } from '../data/mockData';
+import { CSE_INTERNSHIPS, CIVIL_INTERNSHIP, findInternshipBySlug } from '../data/mockData';
 import { internshipService } from '../services/internshipService';
 import { getModeLabel } from '../utils';
 
@@ -35,12 +35,12 @@ export default function InternshipsPage() {
       .then((data) => {
         if (data && data.length > 0) {
           const merged = data.map((item: any) => {
-            const def = [...CSE_INTERNSHIPS, CIVIL_INTERNSHIP].find((m) => m.slug === item.slug);
+            const def = findInternshipBySlug(item.slug);
             return {
               ...def,
               ...item,
               domain: (item.domain === 'CIVIL' || item.domain === 'CIVIL_ENGINEERING') ? 'CIVIL_ENGINEERING' : 'COMPUTER_SCIENCE_ENGINEERING',
-              skills: item.skills || def?.skills || ['Industry Training', 'Hands-on Projects', 'Mentorship', 'Certification'],
+              skills: (item.skills && item.skills.length > 0) ? item.skills : (def?.skills || ['Industry Training', 'Hands-on Projects', 'Mentorship', 'Certification']),
               color: item.color || def?.color || '#2563EB',
               icon: item.icon || def?.icon || 'Briefcase',
               availableSeats: item.availableSeats || def?.availableSeats || 15,
@@ -171,7 +171,9 @@ export default function InternshipsPage() {
                         <IconComp size={22} className="text-white" />
                       </div>
                       <h3 className="font-bold text-brand-dark text-lg mb-1 group-hover:text-brand-blue transition-colors leading-snug">
-                        {internship.title}
+                        <Link to={`/internships/${internship.slug}`} className="hover:underline">
+                          {internship.title}
+                        </Link>
                       </h3>
                       <div className="flex flex-wrap gap-2 mt-2">
                         <span className="badge-blue text-xs">
@@ -208,9 +210,6 @@ export default function InternshipsPage() {
                         </span>
                         <span className="flex items-center gap-1.5">
                           <MapPin size={12} /> {getModeLabel(internship.mode)}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <Users size={12} /> {internship.availableSeats || 15} seats
                         </span>
                         <span className="flex items-center gap-1.5">
                           <CheckCircle size={12} className="text-green-500" /> Offer Letter

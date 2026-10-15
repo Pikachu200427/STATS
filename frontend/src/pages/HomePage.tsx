@@ -104,10 +104,6 @@ function CourseCard({ course }: { course: typeof COURSES[0] }) {
           </h3>
           <p className="text-sm text-brand-slate/70 mb-3 line-clamp-2">{course.shortDescription}</p>
           <div className="flex items-center gap-3 text-xs text-brand-slate/60 mb-4">
-            <span className="flex items-center gap-1">
-              <Users size={12} /> {course.instructor}
-            </span>
-            <span>•</span>
             <span>{course.duration}</span>
             <span>•</span>
             <span>{course.technology}</span>
@@ -333,11 +329,11 @@ export default function HomePage() {
                 {
                   icon: BookOpen,
                   title: 'Technical Courses',
-                  description: 'Industry-oriented courses in Java, Python, C/C++, Data Analytics, DSA, Linux, AWS, and Digital Marketing taught by experienced instructors.',
+                  description: 'Industry-oriented courses in Java, Python, C/C++, Data Analytics, Software Engineering, and DBMS.',
                   color: 'from-blue-500 to-brand-blue',
                   cta: 'Browse Courses',
                   to: '/courses',
-                  highlights: ['9 Courses', 'Expert Instructors', 'Certificates'],
+                  highlights: ['6 Technical Courses', 'Real Projects', 'Certificates'],
                 },
                 {
                   icon: Briefcase,

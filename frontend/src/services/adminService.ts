@@ -146,6 +146,11 @@ export const adminService = {
     return res.data;
   },
 
+  updateEnrollmentProgress: async (id: number | string, progress: number): Promise<CourseEnrollment> => {
+    const res = await api.patch<CourseEnrollment>(`/admin/enrollments/${id}/progress?progress=${encodeURIComponent(progress)}`);
+    return res.data;
+  },
+
   // Offer Letters
   getOfferLetters: async (): Promise<OfferLetter[]> => {
     const res = await api.get<OfferLetter[]>('/admin/offer-letters');

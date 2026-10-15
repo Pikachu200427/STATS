@@ -168,4 +168,48 @@ public class DocumentController {
                     .body(Map.of("error", "FILE_READ_ERROR", "message", "Could not read the uploaded document: " + ex.getMessage()));
         }
     }
+
+    @GetMapping("/resumes/{fileName}")
+    public ResponseEntity<?> downloadResume(@PathVariable String fileName) {
+        try {
+            java.nio.file.Path resumePath = fileStorageService.getResumesDir().resolve(fileName).normalize();
+            if (!java.nio.file.Files.exists(resumePath)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Resume file not found"));
+            }
+            byte[] bytes = java.nio.file.Files.readAllBytes(resumePath);
+            String contentType = fileStorageService.getContentType(resumePath.toString());
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                    .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(bytes);
+        } catch (Exception ex) {
+            log.error("Failed to read resume file: {}", fileName, ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "FILE_READ_ERROR", "message", "Could not read resume document: " + ex.getMessage()));
+        }
+    }
+
+    @GetMapping("/profile-photos/{fileName}")
+    public ResponseEntity<?> getProfilePhoto(@PathVariable String fileName) {
+        try {
+            java.nio.file.Path photoPath = fileStorageService.getProfilePhotosDir().resolve(fileName).normalize();
+            if (!java.nio.file.Files.exists(photoPath)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "NOT_FOUND", "message", "Profile photo not found"));
+            }
+            byte[] bytes = java.nio.file.Files.readAllBytes(photoPath);
+            String contentType = fileStorageService.getContentType(photoPath.toString());
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                    .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(bytes);
+        } catch (Exception ex) {
+            log.error("Failed to read profile photo file: {}", fileName, ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "FILE_READ_ERROR", "message", "Could not read profile photo: " + ex.getMessage()));
+        }
+    }
 }

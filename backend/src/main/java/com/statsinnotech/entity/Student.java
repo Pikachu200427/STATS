@@ -39,6 +39,9 @@ public class Student {
     @Column(length = 1000)
     private String skills;
 
+    @Column(length = 1000)
+    private String profilePhoto;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

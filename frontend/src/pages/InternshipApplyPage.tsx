@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Briefcase, Building2, CheckCircle2, ArrowRight, ShieldCheck,
   AlertCircle, FileText, Upload, Sparkles, MapPin, Award, Check,
   User, Mail, Phone, School, GraduationCap, Calendar, Clock,
-  ExternalLink, Globe, Link2, ChevronDown, CheckCircle
+  ExternalLink, Globe, Link2, ChevronDown, CheckCircle, Trash2
 } from 'lucide-react';
-import { INTERNSHIPS, CIVIL_PARTNER } from '../data/mockData';
+import { CIVIL_PARTNER, findInternshipBySlug } from '../data/mockData';
 import { internshipService } from '../services/internshipService';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -17,8 +17,69 @@ export default function InternshipApplyPage() {
   const { user, student, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const internship: any = INTERNSHIPS.find((i: any) => i.slug === slug) || INTERNSHIPS[0];
-  const isCivil = internship.domain === 'CIVIL' || internship.domain === 'CIVIL_ENGINEERING' || slug?.includes('civil');
+  const [internship, setInternship] = useState<any>(() => findInternshipBySlug(slug));
+  const [isLoading, setIsLoading] = useState<boolean>(!findInternshipBySlug(slug));
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!slug) {
+      setIsLoading(false);
+      return;
+    }
+
+    // Attempt to load live internship by slug
+    internshipService.getInternshipBySlug(slug)
+      .then((data: any) => {
+        if (!isMounted) return;
+        if (data && data.title) {
+          const fallback = findInternshipBySlug(slug);
+          setInternship({
+            ...fallback,
+            ...data,
+            title: data.title,
+            slug: data.slug || slug,
+            domain: (data.domain === 'CIVIL' || data.domain === 'CIVIL_ENGINEERING') ? 'CIVIL_ENGINEERING' : (data.domain || 'COMPUTER_SCIENCE_ENGINEERING'),
+            duration: data.duration || fallback?.duration || '4 Weeks / 8 Weeks',
+            mode: data.mode || fallback?.mode || 'ONLINE',
+          });
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
+        // Fallback: search across all backend internships or local definitions
+        internshipService.getAllInternships()
+          .then((allData: any[]) => {
+            if (!isMounted) return;
+            const matched = findInternshipBySlug(slug, allData);
+            if (matched) {
+              setInternship(matched);
+            } else {
+              const localMatch = findInternshipBySlug(slug);
+              if (localMatch) setInternship(localMatch);
+            }
+            setIsLoading(false);
+          })
+          .catch(() => {
+            if (!isMounted) return;
+            const localMatch = findInternshipBySlug(slug);
+            if (localMatch) setInternship(localMatch);
+            setIsLoading(false);
+          });
+      });
+
+    return () => { isMounted = false; };
+  }, [slug]);
+
+  const isCivil = Boolean(
+    internship?.domain === 'CIVIL' ||
+    internship?.domain === 'CIVIL_ENGINEERING' ||
+    slug?.toLowerCase().includes('civil')
+  );
+
+  const [resumeMode, setResumeMode] = useState<'upload' | 'link'>('upload');
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [isUploadingResume, setIsUploadingResume] = useState(false);
+  const [uploadedResumeName, setUploadedResumeName] = useState<string>('');
 
   const [formData, setFormData] = useState({
     fullName: user ? `${user.firstName} ${user.lastName}` : '',
@@ -29,16 +90,68 @@ export default function InternshipApplyPage() {
     year: student?.year ? `${student.year}th Year` : '3rd Year',
     cgpa: '8.4',
     duration: '2 Months',
-    mode: isCivil ? 'Hybrid (Site & CAD)' : 'Remote Online',
     resumeUrl: '',
     githubUrl: '',
     linkedinUrl: '',
     statementOfPurpose: '',
   });
 
+  useEffect(() => {
+    if (internship) {
+      const civ = internship.domain === 'CIVIL' || internship.domain === 'CIVIL_ENGINEERING' || slug?.toLowerCase().includes('civil');
+      setFormData(prev => ({
+        ...prev,
+        fullName: prev.fullName || (user ? `${user.firstName} ${user.lastName}` : ''),
+        email: prev.email || user?.email || '',
+        phone: prev.phone || user?.phone || '',
+        college: prev.college || student?.college || '',
+        branch: prev.branch || student?.branch || (civ ? 'Civil Engineering' : 'Computer Science & Engineering'),
+      }));
+    }
+  }, [internship, user, student, slug]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [applicationId, setApplicationId] = useState('');
+
+  const handleResumeFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Resume file size must be less than 10MB');
+      return;
+    }
+
+    const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+    if (!['.pdf', '.doc', '.docx'].includes(ext)) {
+      toast.error('Please upload a PDF or Word document (.pdf, .doc, .docx)');
+      return;
+    }
+
+    setResumeFile(file);
+    setIsUploadingResume(true);
+    try {
+      const res = await internshipService.uploadResume(file);
+      setFormData(prev => ({ ...prev, resumeUrl: res.url }));
+      setUploadedResumeName(res.originalName || file.name);
+      toast.success('Resume uploaded successfully!');
+    } catch (err: any) {
+      console.warn('Backend upload failed, using local file reference', err);
+      const localUrl = URL.createObjectURL(file);
+      setFormData(prev => ({ ...prev, resumeUrl: localUrl }));
+      setUploadedResumeName(file.name);
+      toast.success('Resume selected: ' + file.name);
+    } finally {
+      setIsUploadingResume(false);
+    }
+  };
+
+  const handleRemoveResumeFile = () => {
+    setResumeFile(null);
+    setUploadedResumeName('');
+    setFormData(prev => ({ ...prev, resumeUrl: '' }));
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -63,7 +176,6 @@ export default function InternshipApplyPage() {
         slug: slug || internship.slug,
         internshipId: internship.id,
         preferredDuration: formData.duration,
-        preferredMode: formData.mode,
         resumeUrl: formData.resumeUrl,
         githubUrl: formData.githubUrl,
         linkedinUrl: formData.linkedinUrl,
@@ -114,8 +226,8 @@ export default function InternshipApplyPage() {
               <span className="font-semibold text-slate-800">{internship.title}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Duration & Mode:</span>
-              <span className="font-medium text-slate-700">{formData.duration} ({formData.mode})</span>
+              <span className="text-slate-500">Duration:</span>
+              <span className="font-medium text-slate-700">{formData.duration}</span>
             </div>
             {isCivil && (
               <div className="flex justify-between border-t border-slate-200 pt-2 text-amber-800">
@@ -141,6 +253,31 @@ export default function InternshipApplyPage() {
             </button>
           </div>
         </motion.div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen pt-36 pb-24 bg-slate-50 flex items-center justify-center px-4">
+        <div className="card max-w-md w-full p-8 text-center bg-white shadow-lg rounded-2xl border border-slate-100">
+          <div className="w-12 h-12 border-4 border-brand-blue/20 border-t-brand-blue rounded-full animate-spin mx-auto mb-4" />
+          <h3 className="heading-sm text-brand-dark mb-1">Loading Application...</h3>
+          <p className="text-xs text-brand-slate">Fetching program details</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!internship) {
+    return (
+      <div className="min-h-screen pt-36 pb-24 bg-slate-50 flex items-center justify-center px-4">
+        <div className="card max-w-md w-full p-8 text-center bg-white shadow-lg rounded-2xl border border-slate-100">
+          <AlertCircle size={44} className="text-amber-500 mx-auto mb-4" />
+          <h3 className="heading-sm text-brand-dark mb-2">Internship Not Found</h3>
+          <p className="text-xs text-brand-slate mb-6">We could not locate this specific internship track.</p>
+          <Link to="/internships" className="btn btn-primary btn-sm inline-flex">Browse All Internships</Link>
+        </div>
       </div>
     );
   }
@@ -300,54 +437,34 @@ export default function InternshipApplyPage() {
                   </div>
                 </div>
 
-                {/* 2. Internship Preferences */}
+                {/* 2. Internship Duration */}
                 <div className="p-5 rounded-2xl bg-slate-50/70 border border-slate-200/90 space-y-4">
                   <div className="flex items-center gap-2.5 pb-3 border-b border-slate-200/80">
                     <span className="w-6 h-6 rounded-full bg-brand-blue text-white text-xs font-bold flex items-center justify-center shadow-sm">
                       2
                     </span>
                     <div>
-                      <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Preferences &amp; Duration</h3>
-                      <p className="text-[11px] text-slate-500">Select your preferred timeline and execution format</p>
+                      <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Internship Duration</h3>
+                      <p className="text-[11px] text-slate-500">Select your preferred training and cohort timeline</p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Internship Duration</label>
-                      <div className="relative">
-                        <Clock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                        <select
-                          name="duration"
-                          value={formData.duration}
-                          onChange={handleChange}
-                          className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-slate-300 hover:border-slate-400 focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 bg-white text-sm text-slate-800 transition-all outline-none appearance-none cursor-pointer"
-                        >
-                          <option value="1 Month">1 Month (Intensive Fast-Track)</option>
-                          <option value="2 Months">2 Months (Standard Project Cohort)</option>
-                          <option value="3 Months">3 Months (Comprehensive Training)</option>
-                          <option value="6 Months">6 Months (Major Degree Capstone)</option>
-                        </select>
-                        <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">Preferred Mode</label>
-                      <div className="relative">
-                        <MapPin size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                        <select
-                          name="mode"
-                          value={formData.mode}
-                          onChange={handleChange}
-                          className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-slate-300 hover:border-slate-400 focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 bg-white text-sm text-slate-800 transition-all outline-none appearance-none cursor-pointer"
-                        >
-                          <option value="Remote Online">Remote Online (Work from anywhere)</option>
-                          <option value="Hybrid (Site &amp; CAD)">Hybrid (Field survey &amp; CAD modeling)</option>
-                          <option value="Office / Laboratory">On-site Lab &amp; Mentorship</option>
-                        </select>
-                        <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                      </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">Preferred Duration</label>
+                    <div className="relative">
+                      <Clock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                      <select
+                        name="duration"
+                        value={formData.duration}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-slate-300 hover:border-slate-400 focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 bg-white text-sm text-slate-800 transition-all outline-none appearance-none cursor-pointer"
+                      >
+                        <option value="1 Month">1 Month </option>
+                        <option value="2 Months">2 Months </option>
+                        <option value="3 Months">3 Months </option>
+                        <option value="6 Months">6 Months </option>
+                      </select>
+                      <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                     </div>
                   </div>
                 </div>
@@ -366,25 +483,125 @@ export default function InternshipApplyPage() {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                        Resume / CV Link <span className="text-rose-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <FileText size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                        <input
-                          type="url"
-                          name="resumeUrl"
-                          required
-                          value={formData.resumeUrl}
-                          onChange={handleChange}
-                          placeholder="https://drive.google.com/file/d/... or Dropbox / Notion link"
-                          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 hover:border-slate-400 focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 bg-white text-sm text-slate-800 placeholder:text-slate-400 transition-all outline-none"
-                        />
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                        <label className="block text-xs font-bold text-slate-700">
+                          Resume / Curriculum Vitae <span className="text-rose-500">*</span>
+                        </label>
+
+                        {/* Mode Switcher Tabs */}
+                        <div className="inline-flex items-center bg-slate-200/80 p-0.5 rounded-lg text-[11px] font-semibold self-start sm:self-auto">
+                          <button
+                            type="button"
+                            onClick={() => setResumeMode('upload')}
+                            className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-all ${resumeMode === 'upload'
+                              ? 'bg-white text-brand-blue shadow-sm'
+                              : 'text-slate-600 hover:text-slate-900'
+                              }`}
+                          >
+                            <Upload size={12} />
+                            Upload Document
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setResumeMode('link')}
+                            className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-all ${resumeMode === 'link'
+                              ? 'bg-white text-brand-blue shadow-sm'
+                              : 'text-slate-600 hover:text-slate-900'
+                              }`}
+                          >
+                            <Link2 size={12} />
+                            Online Drive Link
+                          </button>
+                        </div>
                       </div>
-                      <p className="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1.5">
-                        <CheckCircle size={12} className="text-emerald-500 shrink-0" />
-                        Please ensure the link permission is set to "Anyone with the link can view".
-                      </p>
+
+                      {resumeMode === 'upload' ? (
+                        <div>
+                          {!formData.resumeUrl ? (
+                            <label className="relative flex flex-col items-center justify-center p-6 sm:p-7 border-2 border-dashed border-slate-300 hover:border-brand-blue/60 bg-white hover:bg-blue-50/20 rounded-2xl cursor-pointer transition-all group">
+                              <input
+                                type="file"
+                                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                onChange={handleResumeFileSelect}
+                                disabled={isUploadingResume}
+                                className="hidden"
+                              />
+                              <div className="w-12 h-12 rounded-xl bg-blue-50 text-brand-blue flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shadow-xs">
+                                {isUploadingResume ? (
+                                  <div className="w-5 h-5 border-2 border-brand-blue border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                  <Upload size={22} />
+                                )}
+                              </div>
+                              <p className="text-xs font-bold text-slate-800 mb-0.5 text-center">
+                                {isUploadingResume ? 'Uploading resume document...' : 'Click to select or drag & drop resume file'}
+                              </p>
+                              <p className="text-[11px] text-slate-500 text-center">
+                                Supported formats: PDF, DOC, DOCX (Max: 10MB)
+                              </p>
+                            </label>
+                          ) : (
+                            <div className="p-3.5 sm:p-4 rounded-xl border border-emerald-200 bg-emerald-50/60 flex items-center justify-between gap-3 shadow-xs">
+                              <div className="flex items-center gap-3 overflow-hidden">
+                                <div className="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                  <FileText size={20} />
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <p className="text-xs font-bold text-slate-800 truncate">
+                                      {uploadedResumeName || 'Uploaded Resume'}
+                                    </p>
+                                    <span className="badge bg-emerald-100 text-emerald-700 text-[10px] px-1.5 py-0.5 font-semibold shrink-0">
+                                      Attached
+                                    </span>
+                                  </div>
+                                  <p className="text-[11px] text-slate-500 truncate">
+                                    Ready for review • {resumeFile ? `${(resumeFile.size / (1024 * 1024)).toFixed(2)} MB` : 'Cloud Document'}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <label className="text-xs font-semibold text-brand-blue hover:text-blue-700 cursor-pointer px-2.5 py-1 rounded-lg hover:bg-blue-50 transition-colors">
+                                  Replace
+                                  <input
+                                    type="file"
+                                    accept=".pdf,.doc,.docx"
+                                    onChange={handleResumeFileSelect}
+                                    className="hidden"
+                                  />
+                                </label>
+                                <button
+                                  type="button"
+                                  onClick={handleRemoveResumeFile}
+                                  className="text-slate-400 hover:text-rose-600 p-1.5 rounded-md hover:bg-rose-50 transition-colors"
+                                  title="Remove file"
+                                >
+                                  <Trash2 size={15} />
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="relative">
+                            <FileText size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                            <input
+                              type="url"
+                              name="resumeUrl"
+                              required={resumeMode === 'link'}
+                              value={formData.resumeUrl}
+                              onChange={handleChange}
+                              placeholder="https://drive.google.com/file/d/... or Dropbox / Notion link"
+                              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 hover:border-slate-400 focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 bg-white text-sm text-slate-800 placeholder:text-slate-400 transition-all outline-none"
+                            />
+                          </div>
+                          <p className="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1.5">
+                            <CheckCircle size={12} className="text-emerald-500 shrink-0" />
+                            Please ensure the link permission is set to "Anyone with the link can view".
+                          </p>
+                        </div>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

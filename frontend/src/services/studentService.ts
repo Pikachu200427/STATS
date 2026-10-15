@@ -25,8 +25,17 @@ export const studentService = {
     return response.data;
   },
 
-  updateProfile: async (data: Partial<Student> & { firstName?: string; lastName?: string }): Promise<Student> => {
+  updateProfile: async (data: Partial<Student> & { firstName?: string; lastName?: string; profilePhoto?: string }): Promise<Student> => {
     const response = await api.put<Student>('/student/profile', data);
+    return response.data;
+  },
+
+  uploadProfilePhoto: async (file: File): Promise<{ profilePhoto: string; message: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post<{ profilePhoto: string; message: string }>('/student/profile/photo', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return response.data;
   },
 

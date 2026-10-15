@@ -63,10 +63,18 @@ export default function PortalLayout() {
       {/* Student Info Card */}
       <div className="p-4 border-b border-gray-100">
         <div className="flex items-center gap-3 p-3 bg-brand-blue/5 rounded-xl">
-          <div className="w-10 h-10 rounded-xl bg-brand-gradient-light flex items-center justify-center shrink-0">
-            <span className="text-white font-bold text-sm">
-              {user?.firstName[0]}{user?.lastName[0]}
-            </span>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
+            {(student?.profilePhoto || localStorage.getItem(`stats_user_photo_${user?.id || 'me'}`)) ? (
+              <img
+                src={student?.profilePhoto || localStorage.getItem(`stats_user_photo_${user?.id || 'me'}`) || ''}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-white font-bold text-sm">
+                {user?.firstName?.[0]}{user?.lastName?.[0]}
+              </span>
+            )}
           </div>
           <div className="min-w-0">
             <div className="font-bold text-brand-dark text-sm truncate">
@@ -184,8 +192,16 @@ export default function PortalLayout() {
               <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500" />
             </Link>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-brand-gradient-light flex items-center justify-center">
-                <span className="text-white text-xs font-bold">{user?.firstName[0]}{user?.lastName[0]}</span>
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-blue to-indigo-600 flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
+                {(student?.profilePhoto || localStorage.getItem(`stats_user_photo_${user?.id || 'me'}`)) ? (
+                  <img
+                    src={student?.profilePhoto || localStorage.getItem(`stats_user_photo_${user?.id || 'me'}`) || ''}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-white text-xs font-bold">{user?.firstName?.[0]}{user?.lastName?.[0]}</span>
+                )}
               </div>
               <div className="hidden sm:block text-right">
                 <div className="text-xs font-semibold text-brand-dark leading-none">{user?.firstName} {user?.lastName}</div>

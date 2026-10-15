@@ -34,9 +34,38 @@ public class InternshipService {
         return internshipRepository.findByDomain(domain.toUpperCase());
     }
 
+    @Transactional
     public Internship getInternshipBySlug(String slug) {
-        return internshipRepository.findBySlug(slug)
-                .orElseThrow(() -> new IllegalArgumentException("Internship not found with slug: " + slug));
+        if (slug == null || slug.trim().isEmpty()) {
+            throw new IllegalArgumentException("Slug cannot be empty");
+        }
+        String cleanSlug = slug.trim().toLowerCase();
+        Internship internship = internshipRepository.findBySlug(cleanSlug).orElse(null);
+        if (internship == null) {
+            if ("aiml-internship".equals(cleanSlug)) {
+                internship = internshipRepository.findBySlug("ai-ml-internship").orElse(null);
+            } else if ("ai-ml-internship".equals(cleanSlug)) {
+                internship = internshipRepository.findBySlug("aiml-internship").orElse(null);
+            } else if ("aws-cloud-internship".equals(cleanSlug)) {
+                internship = internshipRepository.findBySlug("cloud-devops-internship")
+                        .or(() -> internshipRepository.findBySlug("cloud-computing-internship"))
+                        .orElse(null);
+            } else if ("cloud-computing-internship".equals(cleanSlug)) {
+                internship = internshipRepository.findBySlug("aws-cloud-internship")
+                        .or(() -> internshipRepository.findBySlug("cloud-devops-internship"))
+                        .orElse(null);
+            } else if ("python-development-internship".equals(cleanSlug)) {
+                internship = internshipRepository.findBySlug("python-internship").orElse(null);
+            } else if ("python-internship".equals(cleanSlug)) {
+                internship = internshipRepository.findBySlug("python-development-internship").orElse(null);
+            } else if ("civil".equals(cleanSlug)) {
+                internship = internshipRepository.findBySlug("civil-engineering-internship").orElse(null);
+            }
+        }
+        if (internship == null) {
+            internship = createCatalogInternship(cleanSlug);
+        }
+        return internship;
     }
 
     @Transactional

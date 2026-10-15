@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Filter, BookOpen, Users, Clock, Star, ArrowRight, X, SlidersHorizontal } from 'lucide-react';
+import { Search, Filter, BookOpen, Clock, Star, ArrowRight, X, SlidersHorizontal } from 'lucide-react';
 import { COURSES } from '../data/mockData';
 import { courseService } from '../services/courseService';
 import { formatCurrency, getLevelColor, getLevelLabel, calculateDiscount } from '../utils';
@@ -29,16 +29,16 @@ export default function CoursesPage() {
     courseService.getAllCourses()
       .then((data) => {
         if (data && data.length > 0) {
-          // Render only active courses enlisted in the admin panel
-          const activeOnly = data.filter((c) => c.status === 'ACTIVE' || !c.status);
+          // Render only active courses under 1000 Rs
+          const activeOnly = data.filter((c) => (c.status === 'ACTIVE' || !c.status) && Number(c.price) < 1000);
           setCourses(activeOnly);
         } else {
-          setCourses(COURSES.filter((c) => c.status === 'ACTIVE'));
+          setCourses(COURSES.filter((c) => c.status === 'ACTIVE' && Number(c.price) < 1000));
         }
       })
       .catch((err) => {
         console.warn('Backend courses API unavailable, using fallback', err);
-        setCourses(COURSES.filter((c) => c.status === 'ACTIVE'));
+        setCourses(COURSES.filter((c) => c.status === 'ACTIVE' && Number(c.price) < 1000));
       })
       .finally(() => {
         setLoading(false);
@@ -71,7 +71,6 @@ export default function CoursesPage() {
         (c) =>
           (c.title && c.title.toLowerCase().includes(q)) ||
           (c.technology && c.technology.toLowerCase().includes(q)) ||
-          (c.instructor && c.instructor.toLowerCase().includes(q)) ||
           (c.category && c.category.toLowerCase().includes(q))
       );
     }
@@ -125,7 +124,7 @@ export default function CoursesPage() {
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search courses, technology, instructor..."
+                placeholder="Search courses, technology..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 id="course-search"
@@ -309,9 +308,6 @@ export default function CoursesPage() {
                       </p>
 
                       <div className="flex items-center gap-3 text-xs text-brand-slate/60 mb-4">
-                        <span className="flex items-center gap-1">
-                          <Users size={11} /> {course.instructor}
-                        </span>
                         <span className="flex items-center gap-1">
                           <Clock size={11} /> {course.duration}
                         </span>

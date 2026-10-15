@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, BookOpen, Briefcase, FileText, Award,
-  FolderOpen, Building2, Archive, MessageSquare, Mail, Bell,
+  FolderOpen, Building2, MessageSquare, Mail,
   BarChart2, Settings, Shield, LogOut, Menu, X, ChevronRight,
   ClipboardList
 } from 'lucide-react';
@@ -32,11 +32,9 @@ const ADMIN_NAV = [
   { section: 'Communications', items: [
     { label: 'Student Queries', to: '/admin/queries', icon: MessageSquare },
     { label: 'Contact Enquiries', to: '/admin/enquiries', icon: Mail },
-    { label: 'Notifications', to: '/admin/notifications', icon: Bell },
   ]},
   { section: 'Config', items: [
     { label: 'Industry Partners', to: '/admin/partners', icon: Building2 },
-    { label: 'Resources', to: '/admin/resources', icon: Archive },
     { label: 'Settings', to: '/admin/settings', icon: Settings },
   ]},
 ];
@@ -206,11 +204,7 @@ export default function AdminLayout() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/admin/notifications" className="btn-icon hover:bg-gray-100 relative">
-              <Bell size={18} />
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500" />
-            </Link>
-            <Link to="/admin/queries" className="btn-icon hover:bg-gray-100 relative">
+            <Link to="/admin/queries" className="btn-icon hover:bg-gray-100 relative" title="Student Support Tickets">
               <MessageSquare size={18} />
               <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-brand-blue" />
             </Link>

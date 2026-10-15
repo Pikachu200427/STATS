@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  CheckCircle2, ShieldCheck, ArrowRight, BookOpen, Clock,
-  Calendar, Award, CreditCard, Smartphone, Check, Sparkles, AlertCircle
+  CheckCircle2, ShieldCheck, ArrowRight, BookOpen,
+  Smartphone, Sparkles, AlertCircle
 } from 'lucide-react';
 import { COURSES } from '../data/mockData';
 import { courseService } from '../services/courseService';
@@ -32,14 +32,13 @@ export default function CourseEnrollPage() {
               const found = list.find((c) => c.slug === slug || String(c.id) === slug);
               if (found) setCourse(found);
             })
-            .catch(() => {});
+            .catch(() => { });
         })
         .finally(() => setLoading(false));
     }
   }, [slug]);
 
-  const [selectedBatch, setSelectedBatch] = useState('weekend');
-  const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'netbanking'>('upi');
+  const [paymentMethod] = useState<'upi'>('upi');
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [couponError, setCouponError] = useState('');
@@ -105,8 +104,8 @@ export default function CourseEnrollPage() {
       const res = await courseService.enroll({
         courseId: course.id,
         slug: course.slug,
-        batchType: selectedBatch.toUpperCase(),
-        paymentMethod: paymentMethod.toUpperCase(),
+        batchType: 'REGULAR',
+        paymentMethod: 'UPI',
         paidAmount: finalPrice,
         couponCode: appliedCoupon?.code,
       });
@@ -158,10 +157,6 @@ export default function CourseEnrollPage() {
               <span className="font-semibold text-brand-dark">{user?.firstName} {user?.lastName}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Selected Batch:</span>
-              <span className="font-semibold text-brand-blue uppercase">{selectedBatch} Batch</span>
-            </div>
-            <div className="flex justify-between">
               <span className="text-slate-500">Amount Paid:</span>
               <span className="font-bold text-emerald-700">{formatCurrency(finalPrice)}</span>
             </div>
@@ -206,7 +201,7 @@ export default function CourseEnrollPage() {
           <div className="lg:col-span-7 space-y-6">
             <div className="card p-6 bg-white shadow-sm border border-slate-200">
               <h1 className="heading-sm text-brand-dark mb-1">Confirm Enrollment</h1>
-              <p className="text-xs text-brand-slate mb-6">Complete your registration details and select your batch preferences.</p>
+              <p className="text-xs text-brand-slate mb-6">Complete your registration and payment details.</p>
 
               {/* Student info check */}
               <div className="p-3.5 bg-brand-blue/5 border border-brand-blue/15 rounded-xl flex items-center justify-between mb-6">
@@ -221,92 +216,25 @@ export default function CourseEnrollPage() {
                 )}
               </div>
 
-              {/* Step 1: Batch Selection */}
+              {/* Payment Method */}
               <div className="mb-6">
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">
-                  1. Select Upcoming Batch
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div
-                    onClick={() => setSelectedBatch('weekend')}
-                    className={`cursor-pointer border rounded-xl p-3.5 transition-all ${selectedBatch === 'weekend'
-                        ? 'border-brand-blue bg-brand-blue/5 shadow-sm ring-1 ring-brand-blue'
-                        : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                  >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="font-semibold text-sm text-brand-dark flex items-center gap-1.5">
-                        <Calendar size={14} className="text-brand-blue" />
-                        Weekend Live
-                      </span>
-                      {selectedBatch === 'weekend' && <Check size={16} className="text-brand-blue font-bold" />}
-                    </div>
-                    <p className="text-xs text-slate-500">Sat & Sun (10:00 AM – 1:00 PM IST)</p>
-                    <span className="badge badge-info text-[10px] mt-2">Starts Next Saturday</span>
-                  </div>
-
-                  <div
-                    onClick={() => setSelectedBatch('weekday')}
-                    className={`cursor-pointer border rounded-xl p-3.5 transition-all ${selectedBatch === 'weekday'
-                        ? 'border-brand-blue bg-brand-blue/5 shadow-sm ring-1 ring-brand-blue'
-                        : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                  >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="font-semibold text-sm text-brand-dark flex items-center gap-1.5">
-                        <Clock size={14} className="text-brand-blue" />
-                        Weekday Evening
-                      </span>
-                      {selectedBatch === 'weekday' && <Check size={16} className="text-brand-blue font-bold" />}
-                    </div>
-                    <p className="text-xs text-slate-500">Mon – Thu (7:30 PM – 9:00 PM IST)</p>
-                    <span className="badge badge-info text-[10px] mt-2">Starts Next Monday</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Step 2: Payment Method */}
-              <div className="mb-6">
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">
-                  2. Choose Payment Method
+                  Payment Method
                 </label>
                 <div className="space-y-2.5">
                   <div
-                    onClick={() => setPaymentMethod('upi')}
-                    className={`cursor-pointer border rounded-xl p-3.5 flex items-center justify-between transition-all ${paymentMethod === 'upi'
-                        ? 'border-brand-blue bg-brand-blue/5 ring-1 ring-brand-blue'
-                        : 'border-slate-200 hover:border-slate-300'
-                      }`}
+                    className="border border-brand-blue bg-brand-blue/5 ring-1 ring-brand-blue rounded-xl p-3.5 flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
                         <Smartphone size={18} />
                       </div>
                       <div>
-                        <div className="text-sm font-semibold text-brand-dark">Instant UPI & QR Code</div>
+                        <div className="text-sm font-semibold text-brand-dark">Instant UPI &amp; QR Code</div>
                         <div className="text-xs text-slate-500">Google Pay, PhonePe, Paytm, BHIM</div>
                       </div>
                     </div>
-                    {paymentMethod === 'upi' && <div className="w-2.5 h-2.5 rounded-full bg-brand-blue" />}
-                  </div>
-
-                  <div
-                    onClick={() => setPaymentMethod('card')}
-                    className={`cursor-pointer border rounded-xl p-3.5 flex items-center justify-between transition-all ${paymentMethod === 'card'
-                        ? 'border-brand-blue bg-brand-blue/5 ring-1 ring-brand-blue'
-                        : 'border-slate-200 hover:border-slate-300'
-                      }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-blue-100 text-brand-blue flex items-center justify-center">
-                        <CreditCard size={18} />
-                      </div>
-                      <div>
-                        <div className="text-sm font-semibold text-brand-dark">Credit / Debit Card</div>
-                        <div className="text-xs text-slate-500">Visa, Mastercard, RuPay, Maestro</div>
-                      </div>
-                    </div>
-                    {paymentMethod === 'card' && <div className="w-2.5 h-2.5 rounded-full bg-brand-blue" />}
+                    <div className="w-2.5 h-2.5 rounded-full bg-brand-blue" />
                   </div>
                 </div>
               </div>
@@ -385,7 +313,6 @@ export default function CourseEnrollPage() {
                 <div>
                   <h3 className="text-sm font-bold text-brand-dark leading-snug">{course.title}</h3>
                   <p className="text-xs text-brand-slate mt-0.5">{course.technology} • {course.level}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">By {course.instructor}</p>
                 </div>
               </div>
 
@@ -442,16 +369,6 @@ export default function CourseEnrollPage() {
               </div>
             </div>
 
-            {/* Guarantee Badge */}
-            <div className="p-4 bg-amber-50/70 border border-amber-200/70 rounded-xl text-xs text-amber-900 flex items-start gap-3">
-              <Award className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div>
-                <strong className="block font-semibold mb-0.5">STATS Innotech Academic Guarantee</strong>
-                <span>
-                  100% money-back guarantee within the first 3 class sessions if you are not fully satisfied with our curriculum delivery.
-                </span>
-              </div>
-            </div>
           </div>
         </div>
       </div>

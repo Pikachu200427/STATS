@@ -22,18 +22,24 @@ public class FileStorageService {
 
     private Path offerLettersDir;
     private Path certificatesDir;
+    private Path resumesDir;
+    private Path profilePhotosDir;
 
     @PostConstruct
     public void init() {
         try {
             offerLettersDir = Paths.get(uploadsBaseDir, "offer-letters").toAbsolutePath().normalize();
             certificatesDir = Paths.get(uploadsBaseDir, "certificates").toAbsolutePath().normalize();
+            resumesDir = Paths.get(uploadsBaseDir, "resumes").toAbsolutePath().normalize();
+            profilePhotosDir = Paths.get(uploadsBaseDir, "profile-photos").toAbsolutePath().normalize();
 
             Files.createDirectories(offerLettersDir);
             Files.createDirectories(certificatesDir);
+            Files.createDirectories(resumesDir);
+            Files.createDirectories(profilePhotosDir);
 
-            log.info("Initialized document storage directories:\nOffer Letters: {}\nCertificates: {}",
-                    offerLettersDir, certificatesDir);
+            log.info("Initialized document storage directories:\nOffer Letters: {}\nCertificates: {}\nResumes: {}\nProfile Photos: {}",
+                    offerLettersDir, certificatesDir, resumesDir, profilePhotosDir);
         } catch (IOException e) {
             log.error("Failed to initialize document upload directories", e);
             throw new RuntimeException("Could not create upload directories: " + e.getMessage(), e);
@@ -46,6 +52,22 @@ public class FileStorageService {
 
     public String saveCertificateFile(MultipartFile file, String certNo) {
         return saveFile(file, certificatesDir, "cert_" + sanitizeIdentifier(certNo));
+    }
+
+    public String saveResumeFile(MultipartFile file, String candidateName) {
+        return saveFile(file, resumesDir, "resume_" + sanitizeIdentifier(candidateName));
+    }
+
+    public String saveProfilePhoto(MultipartFile file, String studentId) {
+        return saveFile(file, profilePhotosDir, "avatar_" + sanitizeIdentifier(studentId));
+    }
+
+    public Path getResumesDir() {
+        return resumesDir;
+    }
+
+    public Path getProfilePhotosDir() {
+        return profilePhotosDir;
     }
 
     private String saveFile(MultipartFile file, Path targetDir, String prefix) {

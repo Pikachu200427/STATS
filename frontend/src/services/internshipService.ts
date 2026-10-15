@@ -42,4 +42,17 @@ export const internshipService = {
     const response = await api.post<InternshipApplicationResponse>('/internships/apply', payload);
     return response.data;
   },
+
+  uploadResume: async (file: File): Promise<{ url: string; filename: string; originalName: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post<{ url: string; filename: string; originalName: string }>(
+      '/internships/upload-resume',
+      formData,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
+    return response.data;
+  },
 };

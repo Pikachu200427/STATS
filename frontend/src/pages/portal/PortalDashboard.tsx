@@ -186,7 +186,7 @@ export default function PortalDashboard() {
                             {course?.title || 'Technical Course'}
                           </h3>
                           <p className="text-xs text-brand-slate mt-0.5">
-                            Instructor: <span className="font-medium text-slate-700">{course?.instructor || 'STATS Faculty'}</span> · {course?.duration || 'Self-paced'}
+                            Duration: <span className="font-medium text-slate-700">{course?.duration || 'Self-paced'}</span>
                           </p>
                         </div>
                         <div className="flex items-center gap-2 self-start sm:self-center">

@@ -135,7 +135,7 @@ export default function CourseLearningPage() {
                 {curriculum.courseTitle}
               </h1>
               <p className="text-[11px] text-brand-slate truncate hidden sm:block">
-                Instructor: {curriculum.instructor} • Non-Video Interactive Reading Classroom
+                Non-Video Interactive Reading Classroom
               </p>
             </div>
           </div>

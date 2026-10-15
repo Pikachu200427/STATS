@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Code2, Building2, Brain, Cloud, CheckCircle2,
-  ArrowRight, Sparkles, Send, ChevronDown
+  CheckCircle2, ArrowRight, Sparkles, Send, ChevronDown
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { contactService } from '../services/contactService';
@@ -176,104 +175,6 @@ export default function ProjectsPage() {
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ DOMAINS WE COVER ════════════════════════════════════════════════ */}
-      <section className="py-20 bg-white border-b border-slate-200">
-        <div className="container-xl">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="badge badge-info text-xs mb-2">Multidisciplinary Engineering</span>
-            <h2 className="heading-md text-brand-dark">Project Domains We Specialize In</h2>
-            <p className="body-md text-brand-slate mt-2">
-              Whether you are an aspiring software engineer or a civil engineer, we have domain specialists ready to guide you.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                domain: 'Computer Science & IT',
-                icon: Code2,
-                color: 'from-blue-600 to-indigo-600',
-                popularTopics: [
-                  'Distributed Microservices Architecture',
-                  'Full Stack E-Commerce & SaaS Platforms',
-                  'Spring Boot 3 + React / Next.js',
-                  'Role-Based ERP & Management Portals',
-                  'Blockchain & Decentralized DApps',
-                ],
-              },
-              {
-                domain: 'AI, ML & Data Science',
-                icon: Brain,
-                color: 'from-purple-600 to-pink-600',
-                popularTopics: [
-                  'Autonomous LLM Agent Systems',
-                  'Computer Vision & Object Detection (YOLO)',
-                  'Medical Imaging & Disease Prediction',
-                  'NLP Sentiment & Financial Telemetry',
-                  'Deep Learning Fraud Detection',
-                ],
-              },
-              {
-                domain: 'Civil Engineering',
-                icon: Building2,
-                color: 'from-amber-600 to-orange-600',
-                popularTopics: [
-                  'Topographical Survey & Total Station Traverse',
-                  'AutoCAD Civil 3D Road Profile & Earthwork',
-                  'QGIS Watershed & Flood Inundation Modeling',
-                  'STAAD Pro & ETABS Structural Analysis',
-                  'Highway Alignment & Pavement Design',
-                ],
-              },
-              {
-                domain: 'Cloud, DevOps & IoT',
-                icon: Cloud,
-                color: 'from-cyan-600 to-teal-600',
-                popularTopics: [
-                  'Multi-Tenant Kubernetes SaaS Deployments',
-                  'Terraform Infrastructure as Code (IaC)',
-                  'Smart IoT Weather & Energy Monitoring',
-                  'ArgoCD CI/CD GitOps Pipelines',
-                  'Prometheus & Grafana Monitoring Hubs',
-                ],
-              },
-            ].map((d) => {
-              const Icon = d.icon;
-              return (
-                <div key={d.domain} className="card p-6 bg-slate-50/60 border border-slate-200 flex flex-col justify-between">
-                  <div>
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${d.color} text-white flex items-center justify-center mb-4 shadow-md`}>
-                      <Icon size={24} />
-                    </div>
-                    <h3 className="text-base font-bold text-brand-dark mb-3">{d.domain}</h3>
-                    <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                      Sample Project Areas:
-                    </div>
-                    <ul className="space-y-1.5 text-xs text-slate-600 mb-6">
-                      {d.popularTopics.map((topic, i) => (
-                        <li key={i} className="flex items-start gap-1.5">
-                          <CheckCircle2 size={13} className="text-brand-blue shrink-0 mt-0.5" />
-                          <span>{topic}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setFormData((prev) => ({ ...prev, domain: d.domain }));
-                      scrollToForm();
-                    }}
-                    className="btn-outline btn-sm text-xs w-full justify-center"
-                  >
-                    Request {d.domain} Project
-                  </button>
-                </div>
-              );
-            })}
           </div>
         </div>
       </section>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  BookOpen, Users, Clock, Star, ChevronRight, CheckCircle,
+  BookOpen, Clock, Star, ChevronRight, CheckCircle,
   ArrowRight, Play, Lock, Award, Zap, Globe
 } from 'lucide-react';
 import { COURSES } from '../data/mockData';
@@ -93,9 +93,6 @@ export default function CourseDetailPage() {
                       ({course.totalStudents} students)
                     </span>
                   )}
-                  <span className="flex items-center gap-1.5">
-                    <Users size={15} /> By <strong className="text-white">{course.instructor}</strong>
-                  </span>
                   <span className="flex items-center gap-1.5">
                     <Clock size={15} /> {course.duration}
                   </span>
@@ -206,25 +203,6 @@ export default function CourseDetailPage() {
               </ul>
             </motion.div>
 
-            {/* Instructor */}
-            <motion.div custom={3} variants={fadeUp} initial="hidden" animate="visible" className="card p-8">
-              <h2 className="heading-sm text-brand-dark mb-5 flex items-center gap-2">
-                <Users size={20} className="text-brand-blue" /> About the Instructor
-              </h2>
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-brand-gradient-light flex items-center justify-center shrink-0">
-                  <span className="text-white font-black text-2xl">{course.instructor[0]}</span>
-                </div>
-                <div>
-                  <h3 className="font-bold text-brand-dark text-lg">{course.instructor}</h3>
-                  <p className="text-sm text-brand-blue font-medium mb-2">{course.technology} Instructor</p>
-                  <p className="text-sm text-brand-slate/70 leading-relaxed">
-                    Expert instructor at STATS INNOTECH with hands-on industry experience in {course.technology}.
-                    Passionate about making complex concepts accessible and practical for students.
-                  </p>
-                </div>
-              </div>
-            </motion.div>
           </div>
 
           {/* Sidebar — Enroll Card */}
@@ -262,7 +240,6 @@ export default function CourseDetailPage() {
                 {[
                   { icon: Clock, text: `${course.duration} of content` },
                   { icon: Globe, text: course.technology },
-                  { icon: Users, text: `Instructor: ${course.instructor}` },
                   { icon: Award, text: 'Completion Certificate' },
                   { icon: Zap, text: 'Lifetime access' },
                 ].map(({ icon: Icon, text }) => (

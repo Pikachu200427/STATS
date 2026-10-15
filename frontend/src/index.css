@@ -423,6 +423,14 @@
 
 /* ===================== UTILITIES ===================== */
 @layer utilities {
+  .bg-brand-gradient-light {
+    background: linear-gradient(135deg, #155EEF 0%, #06B6D4 100%);
+  }
+
+  .bg-brand-gradient-dark {
+    background: linear-gradient(135deg, #0B1F3A 0%, #155EEF 100%);
+  }
+
   .text-gradient-dark {
     background: linear-gradient(135deg, #155EEF, #06B6D4);
     -webkit-background-clip: text;

@@ -19,6 +19,23 @@ import java.util.List;
 public class InternshipController {
 
     private final InternshipService internshipService;
+    private final com.statsinnotech.service.FileStorageService fileStorageService;
+
+    @PostMapping(value = "/upload-resume", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadResume(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", "Please select a resume file to upload"));
+        }
+        String originalFilename = file.getOriginalFilename();
+        String savedPath = fileStorageService.saveResumeFile(file, "applicant");
+        String filename = java.nio.file.Paths.get(savedPath).getFileName().toString();
+        String publicUrl = "/api/documents/resumes/" + filename;
+        return ResponseEntity.ok(java.util.Map.of(
+                "url", publicUrl,
+                "filename", filename,
+                "originalName", originalFilename != null ? originalFilename : filename
+        ));
+    }
 
     @GetMapping
     public ResponseEntity<List<Internship>> getAllInternships(

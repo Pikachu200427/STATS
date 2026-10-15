@@ -29,6 +29,7 @@ public class StudentController {
     private final StudentRepository studentRepository;
     private final OfferLetterRepository offerLetterRepository;
     private final CertificateRepository certificateRepository;
+    private final com.statsinnotech.service.FileStorageService fileStorageService;
 
     @GetMapping("/profile")
     public ResponseEntity<Student> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
@@ -37,6 +38,35 @@ public class StudentController {
         Student student = studentRepository.findByUser(user)
                 .orElseThrow(() -> new IllegalArgumentException("Student not found"));
         return ResponseEntity.ok(student);
+    }
+
+    @PostMapping(value = "/profile/photo", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadProfilePhoto(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED).build();
+        }
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Student student = studentRepository.findByUser(user)
+                .orElseThrow(() -> new IllegalArgumentException("Student not found"));
+
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Please select a photo to upload"));
+        }
+
+        String savedPath = fileStorageService.saveProfilePhoto(file, student.getStudentId());
+        String filename = java.nio.file.Paths.get(savedPath).getFileName().toString();
+        String photoUrl = "/api/documents/profile-photos/" + filename;
+        student.setProfilePhoto(photoUrl);
+        studentRepository.save(student);
+
+        return ResponseEntity.ok(Map.of(
+                "profilePhoto", photoUrl,
+                "message", "Profile photo uploaded successfully"
+        ));
     }
 
     @PutMapping("/profile")
@@ -83,6 +113,10 @@ public class StudentController {
         }
         if (body.containsKey("skills") && body.get("skills") != null) {
             student.setSkills(body.get("skills").toString());
+        }
+        if (body.containsKey("profilePhoto")) {
+            Object photo = body.get("profilePhoto");
+            student.setProfilePhoto(photo != null ? photo.toString() : null);
         }
 
         return ResponseEntity.ok(studentRepository.save(student));

@@ -128,7 +128,7 @@ export default function AdminCertificates() {
       if (manualFile) {
         toast.success(`Custom certificate uploaded & emailed to student!`);
       } else {
-        toast.success(`Certificate ${issued.certificateNumber} registered. You can upload the custom PDF document anytime.`);
+        toast.success('Certificate registered successfully. You can upload the custom PDF document anytime.');
       }
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Failed to issue certificate');
@@ -216,7 +216,7 @@ export default function AdminCertificates() {
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search by student, Cert ID, code..."
+            placeholder="Search by student, title, code..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="form-input pl-9 py-1.5 text-xs w-full"
@@ -239,7 +239,6 @@ export default function AdminCertificates() {
             <table className="w-full text-xs text-left">
               <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200">
                 <tr>
-                  <th className="py-3 px-4">Certificate ID</th>
                   <th className="py-3 px-4">Student Name</th>
                   <th className="py-3 px-4">Program Title</th>
                   <th className="py-3 px-4">Type</th>
@@ -257,9 +256,6 @@ export default function AdminCertificates() {
 
                   return (
                     <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-3 px-4 font-mono font-bold text-brand-dark">
-                        {c.certificateNumber}
-                      </td>
                       <td className="py-3 px-4">
                         <div className="font-bold text-slate-900 text-sm leading-tight">{studentName}</div>
                         <div className="text-[11px] text-slate-400 mt-0.5">{c.student?.user?.email || c.student?.studentId || 'Student Email'}</div>
@@ -569,7 +565,7 @@ export default function AdminCertificates() {
               <div className="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
                 <div>
                   <h3 className="text-base font-bold text-brand-dark">Upload / Replace Certificate</h3>
-                  <p className="text-xs font-mono text-slate-500">{replaceModalCert.certificateNumber}</p>
+                  <p className="text-xs text-slate-500">{replaceModalCert.title || 'Certificate'}</p>
                 </div>
                 <button onClick={() => setReplaceModalCert(null)} className="text-slate-400 hover:text-slate-600">
                   <X size={18} />

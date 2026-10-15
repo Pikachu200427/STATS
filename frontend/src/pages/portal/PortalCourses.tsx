@@ -113,7 +113,7 @@ export default function PortalCourses() {
                         {course?.title || 'Course Title'}
                       </h3>
                       <p className="text-xs text-brand-slate mt-1">
-                        Instructor: <span className="font-medium text-slate-700">{course?.instructor || 'STATS Faculty'}</span> · Duration: {course?.duration || '8 Weeks'}
+                        Duration: <span className="font-medium text-slate-700">{course?.duration || '8 Weeks'}</span>
                       </p>
 
                       {/* Progress bar */}

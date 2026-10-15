@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import PublicLayout from './layouts/PublicLayout';
 import PortalLayout from './layouts/PortalLayout';
+import ScrollToTop from './components/ScrollToTop';
 
 // Public Direct Pages
 import HomePage from './pages/HomePage';
@@ -100,6 +101,7 @@ function LegalPage({ title }: { title: string }) {
 function AppRoutes() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* ─── Public ─────────────────────────────────────────────────── */}
         <Route element={<PublicLayout />}>
@@ -197,10 +199,8 @@ function AppRoutes() {
           <Route path="certificates" element={<Suspense fallback={<PageLoader />}><AdminCertificates /></Suspense>} />
           <Route path="documents" element={<Navigate to="/admin/offer-letters" replace />} />
           <Route path="partners" element={<Suspense fallback={<PageLoader />}><AdminPartners /></Suspense>} />
-          <Route path="resources" element={<PortalResources />} />
           <Route path="queries" element={<Suspense fallback={<PageLoader />}><AdminQueries /></Suspense>} />
           <Route path="enquiries" element={<Suspense fallback={<PageLoader />}><AdminEnquiries /></Suspense>} />
-          <Route path="notifications" element={<PortalNotifications />} />
           <Route path="analytics" element={<Suspense fallback={<PageLoader />}><AdminAnalytics /></Suspense>} />
           <Route path="settings" element={<PortalSettings />} />
         </Route>
