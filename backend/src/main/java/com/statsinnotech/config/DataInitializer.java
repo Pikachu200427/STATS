@@ -215,6 +215,70 @@ public class DataInitializer implements CommandLineRunner {
                 .totalStudents(39)
                 .build();
 
+        Course dsaJavaCourse = Course.builder()
+                .title("DSA with Java")
+                .slug("dsa-java")
+                .shortDescription("Master essential data structures, trees, graphs, and algorithmic problem-solving with Java.")
+                .description("Hands-on data structures and algorithms in Java covering arrays, linked lists, stacks, queues, trees, graphs, dynamic programming, and complexity analysis.")
+                .category("Programming")
+                .technology("Java / DSA")
+                .duration("1 Month")
+                .level("INTERMEDIATE")
+                .price(new BigDecimal("999"))
+                .discountPrice(new BigDecimal("699"))
+                .status("ACTIVE")
+                .rating(4.9)
+                .totalStudents(95)
+                .build();
+
+        Course dsaPythonCourse = Course.builder()
+                .title("DSA with Python")
+                .slug("dsa-python")
+                .shortDescription("Learn core data structures and algorithmic techniques implemented cleanly in Python.")
+                .description("Master arrays, lists, stacks, queues, trees, hashing, sorting, and algorithmic design patterns using Python 3.")
+                .category("Programming")
+                .technology("Python / DSA")
+                .duration("1 Month")
+                .level("INTERMEDIATE")
+                .price(new BigDecimal("999"))
+                .discountPrice(new BigDecimal("699"))
+                .status("ACTIVE")
+                .rating(4.8)
+                .totalStudents(88)
+                .build();
+
+        Course cloudCourse = Course.builder()
+                .title("Cloud Computing (AWS)")
+                .slug("cloud-computing")
+                .shortDescription("Hands-on cloud architecture covering AWS compute, storage, networking, and deployment.")
+                .description("Learn cloud infrastructure models (IaaS, PaaS, SaaS), deploy scalable applications using AWS EC2, S3, RDS, IAM, and VPC.")
+                .category("Cloud Computing")
+                .technology("AWS")
+                .duration("1 Month")
+                .level("INTERMEDIATE")
+                .price(new BigDecimal("999"))
+                .discountPrice(new BigDecimal("699"))
+                .status("ACTIVE")
+                .rating(4.9)
+                .totalStudents(112)
+                .build();
+
+        Course softwareTestingCourse = Course.builder()
+                .title("Software Testing")
+                .slug("software-testing")
+                .shortDescription("Comprehensive hands-on training module in Manual & Automated QA Testing with Jira.")
+                .description("Hands-on curriculum with live industry projects, Jira bug tracking, test case design, unit & integration testing, and quality assurance.")
+                .category("Testing")
+                .technology("Jira / QA")
+                .duration("1 Month")
+                .level("INTERMEDIATE")
+                .price(new BigDecimal("899"))
+                .discountPrice(new BigDecimal("499"))
+                .status("ACTIVE")
+                .rating(4.8)
+                .totalStudents(41)
+                .build();
+
         // 4. Seed Complete Courses Catalog (Under 1000 Rs)
         Course savedJava = seedCourseIfMissing(javaCourse);
         seedCourseIfMissing(pythonCourse);
@@ -222,6 +286,10 @@ public class DataInitializer implements CommandLineRunner {
         seedCourseIfMissing(dataAnalyticsCourse);
         seedCourseIfMissing(softwareEngCourse);
         seedCourseIfMissing(dbmsCourse);
+        seedCourseIfMissing(dsaJavaCourse);
+        seedCourseIfMissing(dsaPythonCourse);
+        seedCourseIfMissing(cloudCourse);
+        seedCourseIfMissing(softwareTestingCourse);
 
         // 5. Seed Internships Catalog
         Internship fullstackIntern = Internship.builder()

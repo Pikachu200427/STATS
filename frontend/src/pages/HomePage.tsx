@@ -7,7 +7,7 @@ import {
   GraduationCap, Star, Users, Award, Layers,
   ChevronRight, Building2, CheckCircle, Zap,
   BarChart2, Brain, Cloud, Database, Monitor,
-  Coffee, Cpu, ServerCog
+  Coffee, Cpu, ServerCog, Binary, GitBranch, CheckCircle2
 } from 'lucide-react';
 import { COURSES, CSE_INTERNSHIPS, CIVIL_INTERNSHIP, TESTIMONIALS, PLATFORM_STATS, FAQS } from '../data/mockData';
 import { formatCurrency, getLevelColor, calculateDiscount } from '../utils';
@@ -72,10 +72,15 @@ function StatCounter({ value, label, suffix = '+' }: { value: number; label: str
 // ─── Per-course visual config (fix #9: unique icon + gradient per subject) ───
 const COURSE_VISUALS: Record<string, { icon: React.ElementType; gradient: string }> = {
   java: { icon: Coffee, gradient: 'from-orange-500 to-red-500' },
+  'java-core': { icon: Coffee, gradient: 'from-orange-500 to-red-500' },
   python: { icon: Brain, gradient: 'from-yellow-500 to-green-600' },
   'c-cpp': { icon: Cpu, gradient: 'from-slate-600 to-slate-800' },
   'data-analytics': { icon: BarChart2, gradient: 'from-violet-500 to-purple-700' },
+  'dsa-java': { icon: Binary, gradient: 'from-amber-600 to-orange-700' },
+  'dsa-python': { icon: GitBranch, gradient: 'from-emerald-500 to-teal-700' },
+  'cloud-computing': { icon: Cloud, gradient: 'from-sky-500 to-indigo-600' },
   'software-engineering': { icon: ServerCog, gradient: 'from-brand-blue to-blue-700' },
+  'software-testing': { icon: CheckCircle2, gradient: 'from-rose-500 to-pink-700' },
   dbms: { icon: Database, gradient: 'from-teal-500 to-cyan-700' },
   default: { icon: Code2, gradient: 'from-brand-dark to-brand-blue' },
 };
