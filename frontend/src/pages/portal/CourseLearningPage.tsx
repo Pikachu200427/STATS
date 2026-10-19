@@ -131,10 +131,12 @@ export default function CourseLearningPage() {
             </Link>
             <div className="h-4 w-px bg-slate-200 hidden sm:block" />
             <div className="min-w-0">
+              {/* fix #17: this is the one true h1 — lesson title below is demoted to h2 */}
               <h1 className="text-sm font-bold text-brand-dark truncate max-w-xs sm:max-w-md">
                 {curriculum.courseTitle}
               </h1>
-              <p className="text-[11px] text-brand-slate truncate hidden sm:block">
+              {/* fix #4: 11px → 12px minimum readable size */}
+              <p className="text-xs text-brand-slate truncate hidden sm:block">
                 Non-Video Interactive Reading Classroom
               </p>
             </div>
@@ -156,10 +158,12 @@ export default function CourseLearningPage() {
               </span>
             </div>
 
+            {/* fix #1: icon-only toolbar button uses btn-ghost pattern for consistency */}
             <button
               onClick={handlePrint}
               title="Print or Save Study Notes"
-              className="p-2 text-slate-500 hover:text-brand-dark hover:bg-slate-100 rounded-lg transition-colors hidden sm:block"
+              aria-label="Print study notes"
+              className="btn-ghost btn-icon hidden sm:flex"
             >
               <Printer size={16} />
             </button>
@@ -167,7 +171,7 @@ export default function CourseLearningPage() {
             {/* Mobile menu toggle */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+              className="lg:hidden btn-ghost btn-icon"
               aria-label="Toggle Syllabus"
             >
               {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
@@ -188,10 +192,12 @@ export default function CourseLearningPage() {
         >
           <div className="p-4 border-b border-slate-100 bg-slate-50/50">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                <Layers size={14} className="text-brand-blue" /> Syllabus Outline
+              {/* fix #5: remove uppercase from 16-char label — use sentence case */}
+              <span className="text-xs font-bold text-slate-700 tracking-wide flex items-center gap-1.5">
+                <Layers size={14} className="text-brand-blue" /> Syllabus outline
               </span>
-              <span className="text-[11px] font-medium text-slate-500">
+              {/* fix #14: 11px → 12px */}
+              <span className="text-xs font-medium text-slate-500">
                 {completedTopicIds.length} / {allTopics.length} Read
               </span>
             </div>
@@ -204,7 +210,8 @@ export default function CourseLearningPage() {
             />
           </div>
 
-          <div className="flex-1 overflow-y-auto p-3 space-y-4">
+          {/* fix #19: increased space-y-4 → space-y-6 for breathing room between modules */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-6">
             {curriculum.modules.map((module, mIdx) => {
               const filteredTopics = module.topics.filter(t =>
                 t.title.toLowerCase().includes(filterQuery.toLowerCase()) ||
@@ -214,17 +221,22 @@ export default function CourseLearningPage() {
               if (filterQuery && filteredTopics.length === 0) return null;
 
               return (
-                <div key={module.id} className="space-y-1.5">
-                  <div className="px-2 py-1">
-                    <h2 className="text-xs font-bold text-brand-dark uppercase tracking-tight">
+                <div key={module.id} className="space-y-2">
+                  {/* fix #6: remove uppercase from 46-char module heading */}
+                  {/* fix #19: add more padding for visual breathing room */}
+                  <div className="px-2 pt-1 pb-2">
+                    {/* fix #5/#6: h2 is correct here (under page h1); remove uppercase */}
+                    <h2 className="text-xs font-bold text-brand-dark tracking-tight">
                       {module.title}
                     </h2>
-                    <p className="text-[10px] text-slate-400 truncate">
+                    {/* fix #7/#10/#12: remove truncate; allow wrapping; bump to text-xs (12px) */}
+                    <p className="text-xs text-slate-400 mt-0.5 leading-snug line-clamp-2">
                       {module.description}
                     </p>
                   </div>
 
-                  <div className="space-y-1">
+                  {/* fix #19: increase gap between lesson buttons from space-y-1 → space-y-1.5 */}
+                  <div className="space-y-1.5">
                     {filteredTopics.map((topic) => {
                       const isActive = topic.id === activeTopicId;
                       const isDone = completedTopicIds.includes(topic.id);
@@ -237,7 +249,7 @@ export default function CourseLearningPage() {
                             setSidebarOpen(false);
                           }}
                           className={`
-                            w-full text-left px-3 py-2.5 rounded-xl text-xs transition-all flex items-start gap-2.5
+                            w-full text-left px-3 py-3 rounded-xl text-xs transition-all flex items-start gap-2.5
                             ${isActive
                               ? 'bg-blue-50/90 text-brand-blue font-bold shadow-xs border border-blue-200/60'
                               : 'text-slate-700 hover:bg-slate-100/80 font-medium'
@@ -248,6 +260,15 @@ export default function CourseLearningPage() {
                             onClick={(e) => {
                               e.stopPropagation();
                               handleToggleComplete(topic.id);
+                            }}
+                            role="checkbox"
+                            aria-checked={isDone}
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === ' ' || e.key === 'Enter') {
+                                e.stopPropagation();
+                                handleToggleComplete(topic.id);
+                              }
                             }}
                             className={`
                               mt-0.5 w-4 h-4 rounded flex items-center justify-center shrink-0 border transition-all cursor-pointer
@@ -261,8 +282,9 @@ export default function CourseLearningPage() {
                             {isDone && <Check size={11} strokeWidth={3} />}
                           </span>
 
+                          {/* fix #2/#8/#9/#11/#13: remove truncate; allow text to wrap */}
                           <div className="flex-1 min-w-0">
-                            <span className="truncate block leading-snug">
+                            <span className="block leading-snug break-words">
                               {topic.title}
                             </span>
                             <span className="text-[10px] text-slate-400 flex items-center gap-2 mt-0.5">
@@ -282,12 +304,13 @@ export default function CourseLearningPage() {
           </div>
 
           {/* Sidebar Footer info */}
-          <div className="p-3 border-t border-slate-200 bg-slate-50 text-[11px] text-slate-500 flex items-center justify-between">
+          {/* fix #14: bump font to text-xs (12px); fix #21: descriptive link label */}
+          <div className="p-3 border-t border-slate-200 bg-slate-50 text-xs text-slate-500 flex items-center justify-between">
             <span className="flex items-center gap-1 font-medium">
               <Award size={13} className="text-amber-500" /> Certificate upon 100%
             </span>
             <Link to="/portal/certificates" className="text-brand-blue font-semibold hover:underline">
-              View
+              View certificates
             </Link>
           </div>
         </aside>
@@ -320,9 +343,10 @@ export default function CourseLearningPage() {
                   )}
                 </div>
 
-                <h1 className="heading-md text-brand-dark mb-3">
+                {/* fix #17: demote lesson title from h1 → h2 (page h1 is in the header) */}
+                <h2 className="heading-md text-brand-dark mb-3">
                   {activeTopic.title}
-                </h1>
+                </h2>
 
                 <p className="text-sm text-brand-slate leading-relaxed border-l-3 border-brand-blue pl-3 bg-blue-50/30 py-2 rounded-r-lg">
                   {activeTopic.summary}
@@ -331,8 +355,9 @@ export default function CourseLearningPage() {
                 {/* Objectives */}
                 {activeTopic.objectives && activeTopic.objectives.length > 0 && (
                   <div className="mt-6 pt-6 border-t border-slate-100">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
-                      <Sparkles size={14} className="text-amber-500" /> Key Learning Outcomes
+                    {/* fix #15/#18: h3 is correct after h2; remove uppercase from 21-char label */}
+                    <h3 className="text-xs font-bold tracking-wide text-slate-500 mb-3 flex items-center gap-1.5">
+                      <Sparkles size={14} className="text-amber-500" /> Key learning outcomes
                     </h3>
                     <ul className="grid sm:grid-cols-2 gap-2 text-xs text-slate-700">
                       {activeTopic.objectives.map((obj, i) => (
@@ -371,18 +396,22 @@ export default function CourseLearningPage() {
                         <span className="text-xs font-mono font-bold text-teal-400 flex items-center gap-1.5">
                           <Compass size={14} /> {section.diagram.title}
                         </span>
-                        <span className="text-[10px] text-slate-400 uppercase tracking-widest font-mono">
-                          Architecture Blueprint
+                        {/* fix #16: 10px → 12px; fix #3: remove uppercase from label */}
+                        <span className="text-xs text-slate-400 tracking-widest font-mono">
+                          Architecture blueprint
                         </span>
                       </div>
-                      <pre className="font-mono text-xs text-cyan-300 leading-snug whitespace-pre overflow-x-auto py-2">
-                        {section.diagram.svgOrAscii}
-                      </pre>
-                      {section.diagram.caption && (
-                        <p className="text-[11px] text-slate-400 border-t border-slate-800 pt-2 mt-2">
-                          ℹ️ {section.diagram.caption}
-                        </p>
-                      )}
+                      {/* fix #22: wrap pre in a labelled figure for semantics */}
+                      <figure aria-label={`${section.diagram.title} diagram`}>
+                        <pre className="font-mono text-xs text-cyan-300 leading-snug whitespace-pre overflow-x-auto py-2">
+                          {section.diagram.svgOrAscii}
+                        </pre>
+                        {section.diagram.caption && (
+                          <figcaption className="text-xs text-slate-400 border-t border-slate-800 pt-2 mt-2">
+                            ℹ️ {section.diagram.caption}
+                          </figcaption>
+                        )}
+                      </figure>
                     </div>
                   )}
 
@@ -400,6 +429,7 @@ export default function CourseLearningPage() {
                             {section.codeSnippet.language}
                           </span>
                         </div>
+                        {/* fix #1: code-copy button uses shared btn-ghost pattern */}
                         <button
                           onClick={() => handleCopyCode(section.codeSnippet!.code, `code-${sIdx}`)}
                           className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 rounded-lg transition-colors"
@@ -412,7 +442,7 @@ export default function CourseLearningPage() {
                           ) : (
                             <>
                               <Copy size={12} />
-                              <span>Copy Code</span>
+                              <span>Copy code</span>
                             </>
                           )}
                         </button>
@@ -465,7 +495,7 @@ export default function CourseLearningPage() {
                         <AlertTriangle size={17} />
                       </div>
                       <div>
-                        <strong className="font-bold text-rose-950 block mb-0.5">Common Gotcha & Debugging:</strong>
+                        <strong className="font-bold text-rose-950 block mb-0.5">Common Gotcha &amp; Debugging:</strong>
                         <span>{section.commonMistake}</span>
                       </div>
                     </div>
@@ -534,7 +564,7 @@ export default function CourseLearningPage() {
                     <button
                       disabled={selectedAnswer === null}
                       onClick={() => setQuizSubmitted(true)}
-                      className="btn-primary btn-sm py-2 px-5 disabled:opacity-50"
+                      className="btn btn-primary btn-sm disabled:opacity-50"
                     >
                       Check Answer
                     </button>
@@ -560,61 +590,64 @@ export default function CourseLearningPage() {
                 </div>
               )}
 
-              {/* Bottom Topic Navigation & Mark Completed Action */}
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
-                <div className="w-full sm:w-auto">
-                  {prevTopic ? (
-                    <button
-                      onClick={() => setActiveTopicId(prevTopic.id)}
-                      className="btn-outline btn-sm w-full sm:w-auto flex items-center justify-center gap-1.5 text-xs py-2.5 px-4"
-                    >
-                      <ChevronLeft size={15} /> Previous: {prevTopic.title.slice(0, 20)}...
-                    </button>
-                  ) : (
-                    <div />
-                  )}
-                </div>
+              {/* fix #20: Bottom navigation — all three actions grouped in a single flex row
+                  Previous (left) | Mark Completed + Next Topic (right, grouped together) */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                  {/* Left: Previous */}
+                  <div className="w-full sm:w-auto">
+                    {prevTopic ? (
+                      <button
+                        onClick={() => setActiveTopicId(prevTopic.id)}
+                        className="btn btn-outline btn-sm w-full sm:w-auto flex items-center justify-center gap-1.5"
+                      >
+                        <ChevronLeft size={15} /> Previous
+                      </button>
+                    ) : (
+                      <div />
+                    )}
+                  </div>
 
-                {/* Mark Completed Toggle */}
-                <button
-                  onClick={() => handleToggleComplete(activeTopic.id)}
-                  className={`
-                    w-full sm:w-auto btn-sm flex items-center justify-center gap-2 py-2.5 px-6 rounded-xl font-bold transition-all text-xs
-                    ${completedTopicIds.includes(activeTopic.id)
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
-                      : 'bg-brand-blue hover:bg-brand-blue/90 text-white shadow-sm'
-                    }
-                  `}
-                >
-                  <CheckCircle size={15} />
-                  {completedTopicIds.includes(activeTopic.id)
-                    ? 'Completed ✓ (Click to Undo)'
-                    : 'Mark as Completed'
-                  }
-                </button>
-
-                <div className="w-full sm:w-auto">
-                  {nextTopic ? (
+                  {/* Right: Mark Completed + Next Topic grouped together */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                     <button
-                      onClick={() => {
-                        // Automatically complete current if not already
-                        if (!completedTopicIds.includes(activeTopic.id)) {
-                          handleToggleComplete(activeTopic.id);
+                      onClick={() => handleToggleComplete(activeTopic.id)}
+                      className={`
+                        btn btn-sm flex items-center justify-center gap-2
+                        ${completedTopicIds.includes(activeTopic.id)
+                          ? 'btn-outline text-emerald-700 border-emerald-300 hover:bg-emerald-50'
+                          : 'btn-secondary'
                         }
-                        setActiveTopicId(nextTopic.id);
-                      }}
-                      className="btn-primary btn-sm w-full sm:w-auto flex items-center justify-center gap-1.5 text-xs py-2.5 px-4"
+                      `}
                     >
-                      Next Topic <ChevronRight size={15} />
+                      <CheckCircle size={15} />
+                      {completedTopicIds.includes(activeTopic.id)
+                        ? 'Completed ✓ (Undo)'
+                        : 'Mark as completed'
+                      }
                     </button>
-                  ) : (
-                    <Link
-                      to="/portal/courses"
-                      className="btn-primary btn-sm w-full sm:w-auto flex items-center justify-center gap-1.5 text-xs py-2.5 px-4"
-                    >
-                      Finish Course <Award size={15} />
-                    </Link>
-                  )}
+
+                    {nextTopic ? (
+                      <button
+                        onClick={() => {
+                          if (!completedTopicIds.includes(activeTopic.id)) {
+                            handleToggleComplete(activeTopic.id);
+                          }
+                          setActiveTopicId(nextTopic.id);
+                        }}
+                        className="btn btn-primary btn-sm flex items-center justify-center gap-1.5"
+                      >
+                        Next topic <ChevronRight size={15} />
+                      </button>
+                    ) : (
+                      <Link
+                        to="/portal/courses"
+                        className="btn btn-primary btn-sm flex items-center justify-center gap-1.5"
+                      >
+                        Finish course <Award size={15} />
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -631,15 +664,15 @@ export default function CourseLearningPage() {
                   <div className="pt-2 flex justify-center gap-3">
                     <Link
                       to="/portal/certificates"
-                      className="btn bg-white text-emerald-800 hover:bg-slate-100 text-xs font-bold py-2.5 px-5 rounded-xl shadow"
+                      className="btn btn-sm bg-white text-emerald-800 hover:bg-slate-100 font-bold"
                     >
-                      Claim Verified Certificate
+                      Claim verified certificate
                     </Link>
                     <Link
                       to="/portal/courses"
-                      className="btn bg-emerald-700/80 hover:bg-emerald-800 text-white text-xs font-bold py-2.5 px-5 rounded-xl"
+                      className="btn btn-sm bg-emerald-700/80 hover:bg-emerald-800 text-white font-bold"
                     >
-                      Return to Courses
+                      Return to courses
                     </Link>
                   </div>
                 </div>

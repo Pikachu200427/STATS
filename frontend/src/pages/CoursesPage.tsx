@@ -29,16 +29,16 @@ export default function CoursesPage() {
     courseService.getAllCourses()
       .then((data) => {
         if (data && data.length > 0) {
-          // Render only active courses under 1000 Rs
-          const activeOnly = data.filter((c) => (c.status === 'ACTIVE' || !c.status) && Number(c.price) < 1000);
+          // Render all active/available courses
+          const activeOnly = data.filter((c) => c.status !== 'INACTIVE');
           setCourses(activeOnly);
         } else {
-          setCourses(COURSES.filter((c) => c.status === 'ACTIVE' && Number(c.price) < 1000));
+          setCourses(COURSES.filter((c) => c.status !== 'INACTIVE'));
         }
       })
       .catch((err) => {
         console.warn('Backend courses API unavailable, using fallback', err);
-        setCourses(COURSES.filter((c) => c.status === 'ACTIVE' && Number(c.price) < 1000));
+        setCourses(COURSES.filter((c) => c.status !== 'INACTIVE'));
       })
       .finally(() => {
         setLoading(false);

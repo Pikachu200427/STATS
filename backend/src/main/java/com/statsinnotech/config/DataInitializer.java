@@ -36,7 +36,7 @@ public class DataInitializer implements CommandLineRunner {
         try {
             log.info("Checking STATS INNOTECH database status and verifying seed data...");
 
-        // 1. Admin User
+        // 1. Admin User — create or reset password to canonical value on every boot
         if (!userRepository.existsByEmail("admin@statsinnotech.in")) {
             User admin = User.builder()
                     .email("admin@statsinnotech.in")
@@ -48,6 +48,15 @@ public class DataInitializer implements CommandLineRunner {
                     .isEmailVerified(true)
                     .build();
             userRepository.save(admin);
+            log.info("Admin user created: admin@statsinnotech.in");
+        } else {
+            // Admin already exists — re-encode and save canonical password so
+            // the seeded credentials always work after a redeploy or DB migration.
+            userRepository.findByEmail("admin@statsinnotech.in").ifPresent(existing -> {
+                existing.setPassword(passwordEncoder.encode("Admin@123"));
+                userRepository.save(existing);
+                log.info("Admin password re-synced to canonical value.");
+            });
         }
 
         // 2. Student User & Profile

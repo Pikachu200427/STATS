@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  BookOpen, Clock, Star, ChevronRight, CheckCircle,
-  ArrowRight, Play, Lock, Award, Zap, Globe
+  Clock, Star, ChevronRight,
+  ArrowRight, Award, Zap, Globe
 } from 'lucide-react';
 import { COURSES } from '../data/mockData';
+import { getCourseOutcomes } from '../data/courseOutcomes';
 import { courseService } from '../services/courseService';
 import { formatCurrency, getLevelColor, getLevelLabel, calculateDiscount } from '../utils';
 import { useAuth } from '../context/AuthContext';
@@ -48,6 +49,7 @@ export default function CourseDetailPage() {
   }
 
   const discount = calculateDiscount(Number(course.price), course.discountPrice ? Number(course.discountPrice) : undefined);
+  const courseOutcomes = getCourseOutcomes(course);
 
   const handleEnroll = () => {
     if (!isAuthenticated) {
@@ -114,77 +116,41 @@ export default function CourseDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Learning Outcomes */}
+            {/* Course Outcomes */}
             <motion.div custom={0} variants={fadeUp} initial="hidden" animate="visible" className="card p-8">
-              <h2 className="heading-sm text-brand-dark mb-5 flex items-center gap-2">
-                <Zap size={20} className="text-brand-blue" /> What You'll Learn
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {(course.learningOutcomes && course.learningOutcomes.length > 0
-                  ? course.learningOutcomes
-                  : [
-                      'Comprehensive mastery of core concepts and industry best practices',
-                      'Hands-on practical code implementations with real-time feedback',
-                      'Production-ready problem solving and architecture patterns',
-                      'Interview preparation with technical interview insights',
-                    ]
-                ).map((outcome) => (
-                  <div key={outcome} className="flex items-start gap-2.5">
-                    <CheckCircle size={16} className="text-green-500 mt-0.5 shrink-0" />
-                    <span className="text-sm text-brand-slate">{outcome}</span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-gray-100">
+                <div>
+                  <h2 className="heading-sm text-brand-dark flex items-center gap-2.5">
+                    <Award size={22} className="text-brand-blue" /> Course Outcomes
+                  </h2>
+                  <p className="text-xs text-brand-slate/70 mt-1">
+                    Measurable competencies and technical skills achieved upon course completion
+                  </p>
+                </div>
+                <span className="self-start sm:self-auto text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-brand-blue border border-blue-100 shrink-0">
+                  {courseOutcomes.length} Course Outcomes
+                </span>
+              </div>
+
+              <div className="space-y-3.5">
+                {courseOutcomes.map((co) => (
+                  <div
+                    key={co.code}
+                    className="flex items-start gap-3.5 p-4 rounded-xl bg-slate-50/70 border border-slate-200/60 hover:border-blue-200 hover:bg-blue-50/30 transition-all duration-200 shadow-2xs"
+                  >
+                    <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-lg bg-brand-blue text-white font-bold text-xs shrink-0 tracking-wide shadow-xs">
+                      {co.code}
+                    </span>
+                    <p className="text-sm text-brand-slate leading-relaxed font-medium pt-0.5">
+                      {co.description}
+                    </p>
                   </div>
                 ))}
               </div>
             </motion.div>
 
-            {/* Curriculum */}
-            <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible" className="card p-8">
-              <h2 className="heading-sm text-brand-dark mb-5 flex items-center gap-2">
-                <BookOpen size={20} className="text-brand-blue" /> Course Curriculum
-              </h2>
-              <div className="space-y-3">
-                {(course.curriculum && course.curriculum.length > 0
-                  ? course.curriculum
-                  : [
-                      { id: 1, title: 'Foundations & Core Setup', duration: 'Week 1', topics: ['Environment Setup', 'Core Syntax & Basics', 'Hands-on Exercises'] },
-                      { id: 2, title: 'Intermediate Concepts & Practice', duration: 'Week 2', topics: ['Modular Design', 'Data Handling', 'Mini Projects'] },
-                      { id: 3, title: 'Capstone Project & Industry Readiness', duration: 'Week 3-4', topics: ['Performance Tuning', 'Capstone Project Development', 'Interview Preparation'] },
-                    ]
-                ).map((module, i) => (
-                  <details key={module.id} className="group border border-gray-100 rounded-xl overflow-hidden">
-                    <summary className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors list-none">
-                      <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-lg bg-brand-blue/10 flex items-center justify-center shrink-0">
-                          <span className="text-brand-blue text-xs font-bold">{String(i + 1).padStart(2, '0')}</span>
-                        </div>
-                        <span className="font-semibold text-brand-dark text-sm">{module.title}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs text-brand-slate/60 hidden sm:block">{module.duration}</span>
-                        <ChevronRight size={16} className="text-brand-slate/40 transition-transform group-open:rotate-90" />
-                      </div>
-                    </summary>
-                    <div className="px-4 pb-4 pt-1 border-t border-gray-50">
-                      <div className="space-y-2 pl-10">
-                        {module.topics.map((topic) => (
-                          <div key={topic} className="flex items-center gap-2 text-sm text-brand-slate/70">
-                            {i === 0 ? (
-                              <Play size={12} className="text-green-500 shrink-0" />
-                            ) : (
-                              <Lock size={12} className="text-gray-300 shrink-0" />
-                            )}
-                            {topic}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </details>
-                ))}
-              </div>
-            </motion.div>
-
             {/* Requirements */}
-            <motion.div custom={2} variants={fadeUp} initial="hidden" animate="visible" className="card p-8">
+            <motion.div custom={1} variants={fadeUp} initial="hidden" animate="visible" className="card p-8">
               <h2 className="heading-sm text-brand-dark mb-5">Requirements</h2>
               <ul className="space-y-2">
                 {(course.requirements && course.requirements.length > 0

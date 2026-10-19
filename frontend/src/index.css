@@ -10,6 +10,14 @@
   --color-brand-slate: #334155;
   --color-brand-white: #FFFFFF;
 
+  /* ── fix #2: Semantic text-colour tokens ─────────────────────────────── *
+   *  Adding canonical aliases so one-off colours like text-amber-700,       *
+   *  text-blue-300, text-green-400, etc. can be replaced with these tokens  *
+   *  and the page colour count stays comfortably under 12.                  */
+  --color-text-accent:    #06B6D4;          /* brand cyan — use for links/highlights */
+  --color-text-warn:      #b45309;          /* amber-700 — use for warning labels     */
+  --color-text-on-dark:   rgba(255,255,255,0.70); /* white/70 — body copy on dark bg */
+
   /* Extended navy palette */
   --color-navy-50:  #f0f4ff;
   --color-navy-100: #e0eaff;
@@ -309,6 +317,9 @@
   .badge-red   { background: #fee2e2; color: #b91c1c; }
   .badge-gray  { background: #f3f4f6; color: #4b5563; }
   .badge-dark  { background: var(--color-brand-dark); color: white; }
+  /* fix #3: semantic aliases used by CourseLearningPage */
+  .badge-info    { background: color-mix(in srgb, var(--color-brand-blue) 10%, transparent); color: var(--color-brand-blue); }
+  .badge-success { background: #dcfce7; color: #15803d; }
 
   /* --- Forms --- */
   .form-label {
@@ -462,6 +473,11 @@
   }
 
   .animate-float { animation: var(--animate-float); }
+
+  /* fix #2: semantic text-colour utilities — use these instead of one-off utilities */
+  .text-accent     { color: var(--color-text-accent); }
+  .text-muted-dark { color: var(--color-text-on-dark); }
+  .text-warn       { color: var(--color-text-warn); }
 }
 
 /* ===================== ANIMATIONS ===================== */

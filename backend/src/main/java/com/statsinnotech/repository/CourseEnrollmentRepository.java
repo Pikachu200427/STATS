@@ -15,5 +15,6 @@ public interface CourseEnrollmentRepository extends JpaRepository<CourseEnrollme
     Optional<CourseEnrollment> findByEnrollmentId(String enrollmentId);
     Optional<CourseEnrollment> findByStudentAndCourse(Student student, Course course);
     boolean existsByStudentAndCourse(Student student, Course course);
+    void deleteByCourse(Course course);
     List<CourseEnrollment> findAllByOrderByIdDesc();
 }

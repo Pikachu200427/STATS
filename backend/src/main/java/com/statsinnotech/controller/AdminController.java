@@ -63,7 +63,7 @@ public class AdminController {
     // Courses CRUD
     @GetMapping("/courses")
     public ResponseEntity<List<Course>> getAllCourses() {
-        return ResponseEntity.ok(courseRepository.findAll());
+        return ResponseEntity.ok(courseRepository.findAllByOrderByIdDesc());
     }
 
     @PostMapping("/courses")

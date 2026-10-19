@@ -12,4 +12,5 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     Optional<Course> findBySlug(String slug);
     boolean existsBySlug(String slug);
     List<Course> findByStatus(String status);
+    List<Course> findAllByOrderByIdDesc();
 }

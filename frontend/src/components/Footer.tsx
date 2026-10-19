@@ -103,7 +103,8 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-bold text-white mb-5 text-sm uppercase tracking-wider h-10 flex items-center">Quick Links</h4>
+            {/* fix #5: h4 → h3 to avoid heading-level skip (last heading was h2) */}
+            <h3 className="font-bold text-white mb-5 text-sm uppercase tracking-wider h-10 flex items-center">Quick Links</h3>
             <ul className="space-y-3">
               {[
                 { label: 'Home', to: '/' },
@@ -129,7 +130,7 @@ export default function Footer() {
 
           {/* Programs */}
           <div>
-            <h4 className="font-bold text-white mb-5 text-sm uppercase tracking-wider h-10 flex items-center">Programs</h4>
+            <h3 className="font-bold text-white mb-5 text-sm uppercase tracking-wider h-10 flex items-center">Programs</h3>
             <ul className="space-y-3">
               {[
                 { label: 'Java (Core)', to: '/courses/java-core' },
@@ -155,7 +156,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="font-bold text-white mb-5 text-sm uppercase tracking-wider h-10 flex items-center">Contact</h4>
+            <h3 className="font-bold text-white mb-5 text-sm uppercase tracking-wider h-10 flex items-center">Contact</h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <Mail size={16} className="text-brand-cyan mt-0.5 shrink-0" />
@@ -199,7 +200,8 @@ export default function Footer() {
         <div className="container-xl py-5">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/50">
             <div className="flex items-center gap-3">
-              <span className="text-xs uppercase tracking-wider font-semibold">Civil Engineering — Industry Partner:</span>
+              {/* fix #4: removed `uppercase` — 37 chars is too long for all-caps */}
+              <span className="text-xs tracking-wider font-semibold">Civil Engineering — Industry Partner:</span>
               <span className="font-bold text-white/80">AN Survey Consultant</span>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs">

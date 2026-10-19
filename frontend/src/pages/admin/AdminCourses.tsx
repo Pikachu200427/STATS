@@ -61,8 +61,8 @@ export default function AdminCourses() {
       await adminService.deleteCourse(id);
       setCourses((prev) => prev.filter((c) => String(c.id) !== String(id)));
       toast.success(`Course "${title}" deleted from database`);
-    } catch {
-      toast.error('Failed to delete course');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to delete course');
     }
   };
 
@@ -75,8 +75,8 @@ export default function AdminCourses() {
       });
       setCourses((prev) => prev.map((c) => (c.id === course.id ? updated : c)));
       toast.success(`Course status changed to ${newStatus}`);
-    } catch {
-      toast.error('Failed to update course status');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to update course status');
     }
   };
 
@@ -89,8 +89,8 @@ export default function AdminCourses() {
       setCourses((prev) => prev.map((c) => (c.id === editingCourse.id ? updated : c)));
       toast.success('Course updated successfully in database!');
       setEditingCourse(null);
-    } catch {
-      toast.error('Failed to update course in database');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to update course in database');
     }
   };
 
@@ -132,8 +132,8 @@ export default function AdminCourses() {
         status: 'ACTIVE',
       });
       toast.success('Course created successfully in database!');
-    } catch {
-      toast.error('Failed to create course in database');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to create course in database');
     }
   };
 

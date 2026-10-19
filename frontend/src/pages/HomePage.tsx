@@ -6,7 +6,8 @@ import {
   ArrowRight, BookOpen, Briefcase, Code2, Globe,
   GraduationCap, Star, Users, Award, Layers,
   ChevronRight, Building2, CheckCircle, Zap,
-  BarChart2, Brain, Cloud, Database, Monitor
+  BarChart2, Brain, Cloud, Database, Monitor,
+  Coffee, Cpu, ServerCog
 } from 'lucide-react';
 import { COURSES, CSE_INTERNSHIPS, CIVIL_INTERNSHIP, TESTIMONIALS, PLATFORM_STATS, FAQS } from '../data/mockData';
 import { formatCurrency, getLevelColor, calculateDiscount } from '../utils';
@@ -68,18 +69,31 @@ function StatCounter({ value, label, suffix = '+' }: { value: number; label: str
   );
 }
 
+// ─── Per-course visual config (fix #9: unique icon + gradient per subject) ───
+const COURSE_VISUALS: Record<string, { icon: React.ElementType; gradient: string }> = {
+  java: { icon: Coffee, gradient: 'from-orange-500 to-red-500' },
+  python: { icon: Brain, gradient: 'from-yellow-500 to-green-600' },
+  'c-cpp': { icon: Cpu, gradient: 'from-slate-600 to-slate-800' },
+  'data-analytics': { icon: BarChart2, gradient: 'from-violet-500 to-purple-700' },
+  'software-engineering': { icon: ServerCog, gradient: 'from-brand-blue to-blue-700' },
+  dbms: { icon: Database, gradient: 'from-teal-500 to-cyan-700' },
+  default: { icon: Code2, gradient: 'from-brand-dark to-brand-blue' },
+};
+
 // ─── Course Card ────────────────────────────────────────────────────────
 function CourseCard({ course }: { course: typeof COURSES[0] }) {
   const discount = calculateDiscount(course.price, course.discountPrice);
+  const visual = COURSE_VISUALS[course.slug] ?? COURSE_VISUALS.default;
+  const ThumbnailIcon = visual.icon;
   return (
     <motion.div variants={fadeUp}>
       <Link to={`/courses/${course.slug}`} className="card-hover p-0 overflow-hidden block group">
-        {/* Thumbnail */}
-        <div className="relative h-44 bg-gradient-to-br from-brand-dark to-brand-blue overflow-hidden">
+        {/* Thumbnail — unique icon + gradient per course (fix #9) */}
+        <div className={`relative h-44 bg-gradient-to-br ${visual.gradient} overflow-hidden`}>
           <div className="absolute inset-0 bg-grid opacity-20" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20">
-              <Code2 size={28} className="text-white" />
+              <ThumbnailIcon size={28} className="text-white" />
             </div>
           </div>
           {course.status === 'COMING_SOON' && (
@@ -324,13 +338,14 @@ export default function HomePage() {
               </p>
             </motion.div>
 
+            {/* fix #1 & #8: uniform card layout (flex-col + mt-auto footer) and 2-colour icon palette */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
               {[
                 {
                   icon: BookOpen,
                   title: 'Technical Courses',
                   description: 'Industry-oriented courses in Java, Python, C/C++, Data Analytics, Software Engineering, and DBMS.',
-                  color: 'from-blue-500 to-brand-blue',
+                  color: 'from-brand-blue to-brand-cyan',
                   cta: 'Browse Courses',
                   to: '/courses',
                   highlights: ['6 Technical Courses', 'Real Projects', 'Certificates'],
@@ -339,7 +354,7 @@ export default function HomePage() {
                   icon: Briefcase,
                   title: 'CSE Internships',
                   description: 'Hands-on Computer Science internships in Data Analytics, Web Dev, AIML, IoT, Java, Python, Cloud, DBMS, and Software Testing.',
-                  color: 'from-cyan-500 to-brand-cyan',
+                  color: 'from-brand-blue to-brand-cyan',
                   cta: 'Explore Internships',
                   to: '/internships',
                   highlights: ['9 Domains', 'Offer Letters', 'Real Projects'],
@@ -357,7 +372,7 @@ export default function HomePage() {
                   icon: GraduationCap,
                   title: 'College Project Development',
                   description: 'End-to-end final year project development for college students. Custom topic suggestions, full working source code, university-compliant documentation report, and viva coaching.',
-                  color: 'from-emerald-500 to-teal-600',
+                  color: 'from-brand-blue to-brand-cyan',
                   cta: 'Request Project',
                   to: '/projects',
                   highlights: ['Topic Suggestions', 'Live Working Demo', 'Full Report & Viva'],
@@ -366,14 +381,15 @@ export default function HomePage() {
                   icon: Globe,
                   title: 'Website Development',
                   description: 'Professional commercial website and web application development for businesses, startups, and educational institutions.',
-                  color: 'from-purple-500 to-violet-600',
+                  color: 'from-brand-blue to-brand-cyan',
                   cta: 'Our Services',
                   to: '/services/web-development',
                   highlights: ['Custom Design', 'Full Stack', 'SEO Ready'],
                 },
               ].map((offer, i) => (
-                <motion.div key={offer.title} variants={fadeUp} custom={i}>
-                  <Link to={offer.to} className="card-hover h-full p-6 block group">
+                <motion.div key={offer.title} variants={fadeUp} custom={i} className="h-full">
+                  {/* flex-col ensures highlights + CTA are always at bottom (fix #1) */}
+                  <Link to={offer.to} className="card-hover h-full p-6 flex flex-col group">
                     <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${offer.color} flex items-center justify-center mb-5 shadow-brand group-hover:scale-110 transition-transform duration-300`}>
                       <offer.icon size={26} className="text-white" />
                     </div>
@@ -383,14 +399,17 @@ export default function HomePage() {
                     <p className="text-sm text-brand-slate/70 leading-relaxed mb-5">
                       {offer.description}
                     </p>
-                    <div className="flex flex-wrap gap-2 mb-5">
-                      {offer.highlights.map((h) => (
-                        <span key={h} className="badge-blue text-xs">{h}</span>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-1 text-sm font-semibold text-brand-blue group-hover:gap-2 transition-all">
-                      {offer.cta}
-                      <ArrowRight size={15} />
+                    {/* mt-auto pushes badges + CTA to bottom of every card uniformly */}
+                    <div className="mt-auto">
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {offer.highlights.map((h) => (
+                          <span key={h} className="badge-blue text-xs">{h}</span>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-1 text-sm font-semibold text-brand-blue group-hover:gap-2 transition-all">
+                        {offer.cta}
+                        <ArrowRight size={15} />
+                      </div>
                     </div>
                   </Link>
                 </motion.div>
@@ -446,10 +465,10 @@ export default function HomePage() {
               </p>
             </motion.div>
 
-            {/* Domain Cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+            {/* Domain Cards — items-stretch equalises card heights (fix #6) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10 lg:items-stretch">
               {/* CSE Domain */}
-              <motion.div variants={fadeUp}>
+              <motion.div variants={fadeUp} className="h-full">
                 <div className="card p-8 h-full relative overflow-hidden border-2 border-brand-blue">
                   <div className="absolute top-0 right-0 w-48 h-48 bg-brand-blue/10 rounded-full -translate-y-1/2 translate-x-1/2" />
                   <div className="relative">
@@ -482,10 +501,10 @@ export default function HomePage() {
               </motion.div>
 
               {/* Civil Domain */}
-              <motion.div variants={fadeUp}>
+              <motion.div variants={fadeUp} className="h-full">
                 <div className="card p-8 h-full relative overflow-hidden border-2 border-amber-100">
                   <div className="absolute top-0 right-0 w-48 h-48 bg-amber-50 rounded-full -translate-y-1/2 translate-x-1/2" />
-                  <div className="relative">
+                  <div className="relative flex flex-col h-full">
                     <div className="flex items-center gap-4 mb-4">
                       <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg">
                         <Building2 size={26} className="text-white" />
@@ -495,21 +514,21 @@ export default function HomePage() {
                         <h3 className="font-bold text-brand-dark text-xl">Civil Engineering</h3>
                       </div>
                     </div>
-                    {/* Partnership Banner */}
+                    {/* Partnership Banner — fix #3: sentence case, no uppercase */}
                     <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl px-4 py-3 mb-5">
-                      <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-1">In Association With</p>
+                      <p className="text-xs font-semibold text-amber-700 tracking-wider mb-1">In association with</p>
                       <p className="font-bold text-brand-dark">AN Survey Consultant</p>
                     </div>
                     <p className="text-sm text-brand-slate/70 mb-5 leading-relaxed">
                       {CIVIL_INTERNSHIP.shortDescription}
                     </p>
+                    {/* fix #6: capped to 4 items to match CSE card density */}
                     <div className="grid grid-cols-1 gap-2 mb-6">
                       {[
                         'Land Surveying & Field Training',
                         'AutoCAD Drafting & Design',
                         'Site Visit & Construction Supervision',
                         'Performance-Based Stipend',
-                        'Civil Offer Letter & Completion Letter',
                       ].map((item) => (
                         <div key={item} className="flex items-center gap-2 text-sm text-brand-slate">
                           <CheckCircle size={14} className="text-amber-500 shrink-0" />
@@ -517,10 +536,13 @@ export default function HomePage() {
                         </div>
                       ))}
                     </div>
-                    <Link to="/internships/civil" className="btn btn-sm bg-amber-500 text-white hover:bg-amber-600 group">
-                      Explore Civil Internship
-                      <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
-                    </Link>
+                    {/* fix #7: consistent btn-primary btn-sm matches CSE card CTA */}
+                    <div className="mt-auto">
+                      <Link to="/internships/civil" className="btn btn-primary btn-sm group">
+                        Explore Civil Internship
+                        <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </motion.div>

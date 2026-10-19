@@ -28,7 +28,7 @@ public class CourseService {
     private final EmailService emailService;
 
     public List<Course> getAllCourses() {
-        return courseRepository.findAll();
+        return courseRepository.findAllByOrderByIdDesc();
     }
 
     public Course getCourseBySlug(String slug) {
@@ -38,9 +38,32 @@ public class CourseService {
 
     @Transactional
     public Course createCourse(Course course) {
-        if (course.getSlug() == null || course.getSlug().isBlank()) {
-            course.setSlug(course.getTitle().toLowerCase().replaceAll("[^a-z0-9]+", "-"));
+        String baseSlug = (course.getSlug() != null && !course.getSlug().isBlank())
+                ? course.getSlug().trim().toLowerCase().replaceAll("[^a-z0-9]+", "-")
+                : (course.getTitle() != null ? course.getTitle().trim().toLowerCase().replaceAll("[^a-z0-9]+", "-") : "course");
+
+        baseSlug = baseSlug.replaceAll("^-+|-+$", "");
+        if (baseSlug.isBlank()) {
+            baseSlug = "course-" + UUID.randomUUID().toString().substring(0, 6);
         }
+
+        String uniqueSlug = baseSlug;
+        int counter = 1;
+        while (courseRepository.existsBySlug(uniqueSlug)) {
+            uniqueSlug = baseSlug + "-" + counter++;
+        }
+        course.setSlug(uniqueSlug);
+
+        if (course.getStatus() == null || course.getStatus().isBlank()) {
+            course.setStatus("ACTIVE");
+        }
+        if (course.getRating() == null) {
+            course.setRating(4.8);
+        }
+        if (course.getTotalStudents() == null) {
+            course.setTotalStudents(0);
+        }
+
         return courseRepository.save(course);
     }
 
@@ -58,13 +81,25 @@ public class CourseService {
         existing.setDiscountPrice(updated.getDiscountPrice());
         existing.setStatus(updated.getStatus());
         existing.setDuration(updated.getDuration());
+        if (updated.getInstructor() != null) {
+            existing.setInstructor(updated.getInstructor());
+        }
+        if (updated.getCategory() != null) {
+            existing.setCategory(updated.getCategory());
+        }
+        if (updated.getThumbnail() != null) {
+            existing.setThumbnail(updated.getThumbnail());
+        }
 
         return courseRepository.save(existing);
     }
 
     @Transactional
     public void deleteCourse(Long id) {
-        courseRepository.deleteById(id);
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Course not found with id: " + id));
+        enrollmentRepository.deleteByCourse(course);
+        courseRepository.delete(course);
     }
 
     @Transactional

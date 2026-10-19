@@ -64,6 +64,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         // Public endpoints
                         .requestMatchers(
+                                "/error",
                                 "/api/auth/**",
                                 "/api/courses/**",
                                 "/api/internships/**",
